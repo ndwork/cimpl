@@ -8,6 +8,7 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 #include "cimpl_test.h"
 #include "cimpl.h"
 
@@ -17,14 +18,14 @@ int test_absImg(){
   unsigned int M=2;
   unsigned int N=3;
   unsigned int out;
-
   myImg = cimpl_mallocImg(M,N);
   answer = cimpl_mallocImg(M,N);
+  result = cimpl_mallocImg(M,N);
+
   for( unsigned int i=0; i<M*N; ++i ){
     myImg.data[i] = pow(-1,i) * i;
     answer.data[i] = i;
   }
-  result = cimpl_mallocImg(M,N);
   cimpl_absImg( myImg, &result );
   out = cimpl_equalImgs(result, answer);
 
@@ -38,16 +39,16 @@ int test_addImgs(){
   unsigned int M=2;
   unsigned int N=3;
   unsigned int out;
-
   img1 = cimpl_mallocImg(M,N);
   img2 = cimpl_mallocImg(M,N);
   answer = cimpl_mallocImg(M,N);
+  result = cimpl_mallocImg(M,N);
+
   for( unsigned int i=0; i<M*N; ++i ){
     img1.data[i] = i;
     img2.data[i] = i;
     answer.data[i] = 2*i;
   }
-  result = cimpl_mallocImg(M,N);
   cimpl_addImgs( img1, img2, &result );
   out = cimpl_equalImgs(result, answer);
 
@@ -63,14 +64,14 @@ int test_addScalar2Img(){
   unsigned int M=2;
   unsigned int N=3;
   unsigned int out;
-
   myImg = cimpl_mallocImg(M, N);
   answer = cimpl_mallocImg(M, N);
+  result = cimpl_mallocImg(M,N);
+
   for( unsigned int i=0; i<M*N; ++i ){
     myImg.data[i] = i;
     answer.data[i] = i + 8;
   }
-  result = cimpl_mallocImg(M,N);
   cimpl_addScalar2Img(8, myImg, &result);
   out = cimpl_equalImgs(result, answer);
 
@@ -85,7 +86,6 @@ int test_divideImgs(){
   unsigned int M=2;
   unsigned int N=3;
   unsigned int out;
-
   img1 = cimpl_mallocImg(M, N);
   img2 = cimpl_mallocImg(M, N);
   result = cimpl_mallocImg(M, N);
@@ -112,7 +112,6 @@ int test_divideImgByScalar(){
   unsigned int N=3;
   float scalar = 2;
   unsigned int out;
-  
   myImg = cimpl_mallocImg(M, N);
   result = cimpl_mallocImg(M, N);
   answer = cimpl_mallocImg(M, N);
@@ -135,7 +134,6 @@ int test_multiplyImgs(){
   unsigned int M=2;
   unsigned int N=3;
   unsigned int out;
-  
   img1 = cimpl_mallocImg(M, N);
   img2 = cimpl_mallocImg(M, N);
   result = cimpl_mallocImg(M, N);
@@ -162,7 +160,6 @@ int test_multiplyImgByScalar(){
   unsigned int N=3;
   float scalar = 1.8;
   unsigned int out;
-
   myImg = cimpl_mallocImg(M, N);
   result = cimpl_mallocImg(M, N);
   answer = cimpl_mallocImg(M, N);
@@ -180,13 +177,57 @@ int test_multiplyImgByScalar(){
   return out;
 }
 
+int test_rot90(){
+  cimpl_imgf myImg, result, answer;
+  unsigned int M, N, out;
+  float answerValues[6] = {4, 2, 0, 5, 3, 1};
+  M=2; N=3;
+
+  myImg = cimpl_mallocImg(M,N);
+  result = cimpl_mallocImg(N,M);
+  answer = cimpl_mallocImg(N,M);
+  
+  for( unsigned int i=0; i<myImg.h*myImg.w; ++i ){
+    myImg.data[i] = i;
+  }
+  cimpl_rot90( myImg, &result );
+  memcpy( answer.data, answerValues, sizeof(float)*answer.h*answer.w );
+  out = cimpl_equalImgs(result, answer);
+
+  cimpl_freeImg(&myImg);
+  cimpl_freeImg(&result);
+  cimpl_freeImg(&answer);
+  return out;
+}
+
+int test_rot180(){
+  cimpl_imgf myImg, result, answer;
+  unsigned int M, N, out;
+  M=2; N=3;
+
+  myImg = cimpl_mallocImg(M,N);
+  result = cimpl_mallocImg(M,N);
+  answer = cimpl_mallocImg(M,N);
+  
+  for( unsigned int i=0; i<myImg.h*myImg.w; ++i ){
+    myImg.data[i] = i;
+    answer.data[i] = myImg.h*myImg.w-i-1;
+  }
+  cimpl_rot180( myImg, &result );
+  out = cimpl_equalImgs(result, answer);
+
+  cimpl_freeImg(&myImg);
+  cimpl_freeImg(&result);
+  cimpl_freeImg(&answer);
+  return out;
+}
+
 int test_sumImg(){
   cimpl_imgf myImg;
   float result, answer;
   unsigned int M=2;
   unsigned int N=3;
   unsigned int out;
-  
   myImg = cimpl_mallocImg(M,N);
 
   answer = 0;
@@ -240,7 +281,19 @@ void cimpl_test(){
   } else {
     printf("failed - cimpl_multiplyImgs\n");
   }
-  
+
+  if( test_rot90() ){
+    printf("passed - cimpl_rot90\n");
+  } else {
+    printf("failed - cimpl_rot90\n");
+  }
+
+  if( test_rot180() ){
+    printf("passed - cimpl_rot180\n");
+  } else {
+    printf("failed - cimpl_rot180\n");
+  }
+
   if( test_sumImg() ){
     printf("passed - cimpl_sumImg\n");
   } else {
