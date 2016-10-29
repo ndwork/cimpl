@@ -17,18 +17,16 @@
 void cimpl_absImg( cimpl_imgf const in, cimpl_imgf * const out ){
   assert( out->h == in.h );
   assert( out->w == in.w );
-  for( int i=0; i<in.h*in.w; ++i ){
+  for( int i=0; i<in.h*in.w; ++i )
     out->data[i] = fabsf(in.data[i]);
-  }
 }
 
 void cimpl_absVol( cimpl_volf const in, cimpl_volf * const out ){
   assert( out->h == in.h );
   assert( out->w == in.w );
   assert( out->s == in.s );
-  for( int i=0; i<in.h*in.w*in.s; ++i ){
+  for( int i=0; i<in.h*in.w*in.s; ++i )
     out->data[i] = fabsf(in.data[i]);
-  }
 }
 
 void cimpl_addImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out ){
@@ -36,9 +34,8 @@ void cimpl_addImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * c
   assert( out->h == img1.h );
   assert( out->w == img2.w );
   assert( out->h == img2.h );
-  for( int i=0; i<img1.h*img1.w; ++i){
+  for( int i=0; i<img1.h*img1.w; ++i)
     out->data[i] = img1.data[i] + img2.data[i];
-  }
 }
 
 void cimpl_addVols( cimpl_volf const vol1, cimpl_volf const vol2, cimpl_volf * const out ){
@@ -48,9 +45,8 @@ void cimpl_addVols( cimpl_volf const vol1, cimpl_volf const vol2, cimpl_volf * c
   assert( out->w == vol2.w );
   assert( out->h == vol2.h );
   assert( out->s == vol2.s );
-  for( int i=0; i<vol1.h*vol1.w*vol1.s; ++i){
+  for( int i=0; i<vol1.h*vol1.w*vol1.s; ++i)
     out->data[i] = vol1.data[i] + vol2.data[i];
-  }
 }
 
 void cimpl_addScalar2Img( float const scalar, cimpl_imgf const in, cimpl_imgf * const out ){
@@ -91,18 +87,12 @@ void cimpl_circShiftVol( cimpl_volf const in, int hShift, int vShift, int sShift
   int inX, inY, inZ;
   for( int x=0; x<in.w; ++x ){
     inX = x + hShift;
-    while( inX < 0 )
-      inX += in.w;
     inX = inX % in.w;
     for( int y=0; y<in.h; ++y ){
       inY = y + vShift;
-      while( inY < 0 )
-        inY += in.h;
       inY = inY % in.h;
       for( int z=0; z<in.s; ++z ){
         inZ = z + sShift;
-        while( inZ < 0 )
-          inZ += in.s;
         inZ = inZ % in.s;
 
         out->data[y+x*in.h+z*in.h*in.w] = in.data[inY+inX*in.h+inZ*in.h*in.w];
@@ -141,8 +131,7 @@ void cimpl_cropImg( cimpl_imgf const in, cimpl_imgf * const out ){
 
     for( unsigned int y=0; y<out->h; ++y ){
       out->data[y+colOffset] = in.data[ (minH+y)+ minColOffset ];
-    }
-  }
+  } }
 }
 
 void cimpl_cropVol( cimpl_volf const in, cimpl_volf * const out ){
@@ -210,9 +199,8 @@ void cimpl_divideImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf 
   assert( out->h == img1.h );
   assert( out->w == img2.w );
   assert( out->h == img2.h );
-  for( int i=0; i<img1.h*img1.w; ++i){
+  for( int i=0; i<img1.h*img1.w; ++i)
     out->data[i] = img1.data[i] / img2.data[i];
-  }
 }
 
 void cimpl_divideImgByScalar( cimpl_imgf const in, float const scalar, cimpl_imgf * const out ){
@@ -226,9 +214,9 @@ float cimpl_dotImgs( cimpl_imgf const img1, cimpl_imgf const img2 ){
   assert( img1.w == img2.w );
   assert( img1.h == img2.h );
   float out = 0;
-  for( int i=0; i<img1.h*img1.w; ++i ){
+  for( int i=0; i<img1.h*img1.w; ++i )
     out += img1.data[i] * img2.data[i];
-  }
+
   return out;
 }
 
@@ -374,9 +362,8 @@ void cimpl_multiplyImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_img
   assert( out->h == img1.h );
   assert( out->w == img2.w );
   assert( out->h == img2.h );
-  for( int i=0; i<img1.h*img1.w; ++i){
+  for( int i=0; i<img1.h*img1.w; ++i)
     out->data[i] = img1.data[i] * img2.data[i];
-  }
 }
 
 void cimpl_multiplyImgByScalar( cimpl_imgf const in, float const scalar, cimpl_imgf * const out ){
@@ -391,9 +378,8 @@ void cimpl_subtractImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_img
   assert( out->h == img1.h );
   assert( out->w == img2.w );
   assert( out->h == img2.h );
-  for( int i=0; i<img1.h*img1.w; ++i){
+  for( int i=0; i<img1.h*img1.w; ++i)
     out->data[i] = img1.data[i] - img2.data[i];
-  }
 }
 
 void cimpl_subtractScalarFromImg( cimpl_imgf const in, float const scalar, cimpl_imgf * const out ){
@@ -407,7 +393,6 @@ float cimpl_sumImg( cimpl_imgf const * const in ){
   float out=0;
   for( int i=0; i<in->h*in->w; ++i)
     out += in->data[i];
-
   return out;
 }
 
