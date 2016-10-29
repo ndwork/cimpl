@@ -38,6 +38,7 @@ void cimpl_divideImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf 
 void cimpl_divideImgByScalar( cimpl_imgf const in, float const scalar, cimpl_imgf * const out );
 float cimpl_dotImgs( cimpl_imgf const img1, cimpl_imgf const img2 );
 int cimpl_equalImgs( cimpl_imgf const img1, cimpl_imgf const img2 );
+int cimpl_equalVols( cimpl_volf const vol1, cimpl_volf const vol2 );
 cimpl_imgf cimpl_extractSubImg( cimpl_imgf const in, unsigned int const h1,
   unsigned int const h2, unsigned int const v1, unsigned int const v2 );
 void cimpl_freeImg( cimpl_imgf *out );

@@ -247,9 +247,23 @@ int cimpl_equalImgs( cimpl_imgf const img1, cimpl_imgf const img2 ){
   if( img1.w != img2.w )
     return 0;
   for( unsigned int i=0; i<img1.h*img1.w; ++i){
-    if( img1.data[i] != img2.data[i] )
+    if( img1.data[i] != img2.data[i] ){
+      return 0;    
+  } }
+  return 1;
+}
+
+int cimpl_equalVols( cimpl_volf const vol1, cimpl_volf const vol2 ){
+  if( vol1.h != vol2.h )
+    return 0;
+  if( vol1.w != vol2.w )
+    return 0;
+  if( vol1.s != vol2.s )
+    return 0;
+  for( unsigned int i=0; i<vol1.h*vol1.w*vol1.s; ++i){
+    if( vol1.data[i] != vol2.data[i] ){
       return 0;
-  }
+  } }
   return 1;
 }
 
