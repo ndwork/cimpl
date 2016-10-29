@@ -74,7 +74,7 @@ void cimpl_circShiftImg( cimpl_imgf const in, int hShift, int vShift, cimpl_imgf
   int inX, inY;
   for( int x=0; x<in.w; ++x ){
     inX = x+hShift;
-    while( inX < 0)
+    while( inX < 0 )
       inX += in.w;
     inX = inX % in.w;
     for( int y=0; y<in.h; ++y ){
@@ -82,7 +82,36 @@ void cimpl_circShiftImg( cimpl_imgf const in, int hShift, int vShift, cimpl_imgf
       while( inY < 0 )
         inY += in.h;
       inY = inY % in.h;
+
       out->data[y+x*in.h] = in.data[inY+inX*in.h];
+    }
+  }
+}
+
+void cimpl_circShiftVol( cimpl_volf const in, int hShift, int vShift, int sShift,
+  cimpl_volf * const out ){
+  assert( out->w == in.w );
+  assert( out->h == in.h );
+  assert( out->s == in.s );
+  int inX, inY, inZ;
+  for( int x=0; x<in.w; ++x ){
+    inX = x + hShift;
+    while( inX < 0 )
+      inX += in.w;
+    inX = inX % in.w;
+    for( int y=0; y<in.h; ++y ){
+      inY = y + vShift;
+      while( inY < 0 )
+        inY += in.h;
+      inY = inY % in.h;
+      for( int z=0; z<in.s; ++z ){
+        inZ = z + sShift;
+        while( inZ < 0 )
+          inZ += in.s;
+        inZ = inZ % in.s;
+
+        out->data[y+x*in.h+z*in.h*in.w] = in.data[inY+inX*in.h+inZ*in.h*in.w];
+      }
     }
   }
 }

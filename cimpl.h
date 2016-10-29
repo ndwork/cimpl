@@ -29,6 +29,8 @@ void cimpl_addVols( cimpl_volf const vol1, cimpl_volf const vol2, cimpl_volf * c
 void cimpl_addScalar2Img( float const scalar, cimpl_imgf const in, cimpl_imgf * const out );
 void cimpl_addScalar2Vol( float const scalar, cimpl_volf const in, cimpl_volf * const out );
 void cimpl_circShiftImg( cimpl_imgf const in, int hShift, int vShift, cimpl_imgf * const out );
+void cimpl_circShiftVol( cimpl_volf const in, int hShift, int vShift, int sShift,
+  cimpl_volf * const out );
 void cimpl_cropImg( cimpl_imgf const in, cimpl_imgf * const out );
 void cimpl_cropVol( cimpl_volf const in, cimpl_volf * const out );
 void cimpl_displayImg( cimpl_imgf const in );
