@@ -80,6 +80,32 @@ int test_addScalar2Img(){
   return out;
 }
 
+int test_divideImgs(){
+  cimpl_imgf img1, img2, result, answer;
+  unsigned int M=2;
+  unsigned int N=3;
+  unsigned int out;
+
+  img1 = cimpl_mallocImg(M, N);
+  img2 = cimpl_mallocImg(M, N);
+  result = cimpl_mallocImg(M, N);
+  answer = cimpl_mallocImg(M, N);
+
+  for( unsigned int i=1; i<=M*N; ++i ){
+    img1.data[i-1] = 2*i;
+    img2.data[i-1] = i;
+    answer.data[i-1] = 2;
+  }
+  cimpl_divideImgs(img1, img2, &result);
+  out = cimpl_equalImgs(result, answer);
+
+  cimpl_freeImg(&img1);
+  cimpl_freeImg(&img2);
+  cimpl_freeImg(&result);
+  cimpl_freeImg(&answer);
+  return out;
+}
+
 
 
 void cimpl_test(){
@@ -100,5 +126,11 @@ void cimpl_test(){
     printf("passed - cimpl_addScalar2Img\n");
   } else {
     printf("failed - cimpl_addScalar2Img\n");
+  }
+
+  if( test_divideImgs() ){
+    printf("passed - cimpl_divideImgs\n");
+  } else {
+    printf("failed - cimpl_divideImgs\n");
   }
 }

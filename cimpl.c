@@ -346,10 +346,10 @@ void cimpl_linInterpImg( cimpl_imgf const img, unsigned int const N, float const
   } }
 }
 
-cimpl_imgf cimpl_mallocImg( unsigned int const w, unsigned int const h ){
+cimpl_imgf cimpl_mallocImg( unsigned int const h, unsigned int const w ){
   cimpl_imgf out;
-  out.w = w;
   out.h = h;
+  out.w = w;
   out.data = (float*) malloc( sizeof(float) * w * h );
   return out;
 }
