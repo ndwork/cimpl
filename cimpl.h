@@ -47,7 +47,7 @@ float cimpl_linInterp( unsigned int const N, float const * const x, float const 
 void cimpl_linInterps( unsigned int const N, float const * const x, float const * const y,
   float const outOfBounds, unsigned int const M, float const * const q, float * const out );
 void cimpl_linInterpImg( cimpl_imgf const img, unsigned int const N, float const * const xq,
-  float const * const yq, float * const out );
+  float const * const yq, float const outOfBounds, float * const out );
 cimpl_imgf cimpl_mallocImg( unsigned int const w, unsigned int const h );
 void cimpl_multiplyImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out );
 void cimpl_multiplyImgByScalar( cimpl_imgf const in, float const scalar, cimpl_imgf * const out );
