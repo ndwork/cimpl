@@ -248,7 +248,7 @@ int cimpl_equalImgs( cimpl_imgf const img1, cimpl_imgf const img2 ){
     return 0;
   for( unsigned int i=0; i<img1.h*img1.w; ++i){
     if( img1.data[i] != img2.data[i] ){
-      return 0;    
+      return 0;
   } }
   return 1;
 }
@@ -286,19 +286,21 @@ void cimpl_freeImg( cimpl_imgf *out ){
 }
 
 float cimpl_linInterp( unsigned int const N, float const * const x, float const * const y,
-  float const extrapValue, float const q ){
+  float const outOfBounds, float const q ){
   // N is the number of values in the x and y arrays
   // x is an array of inputs (or domain values) in ascending order
-  // y is an array of outputs (or range values) in ascending order
-  // extrapValue is the value to return if extrapolating
+  // y is an array of outputs (or range values) where y[i] corresponds to x[i]
+  // outOfBounds is the value to return if extrapolating
   // q is the query domain value.
 
-  float out=extrapValue;
-  for( int i=0; i<N-1; ++i ){
-    if( q > x[i] ){
-      out = y[i] + (y[i+1]-y[i])/(x[i+1]-x[i]) * (q-x[i]);
-    }
-  }
+  if( q < x[0] )
+    return outOfBounds;
+
+  float out=outOfBounds;
+  for( int i=1; i<N; ++i ){
+    if( q < x[i] ){
+      out = y[i-1] + (y[i]-y[i-1])/(x[i]-x[i-1]) * (q-x[i-1]);
+  } }
   return out;
 }
 
