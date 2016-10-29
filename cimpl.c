@@ -294,14 +294,23 @@ float cimpl_linInterp( unsigned int const N, float const * const x, float const 
   // q is the query domain value.
 
   float out=outOfBounds;
+  unsigned int lowIndx=0;
+  unsigned int highIndx=N-1;
+  unsigned int midIndx;
 
-  if( q < x[0] || q > x[N-1] )
-    return outOfBounds;
+  if( q < x[0] || q > x[N-1] ) return outOfBounds;
 
-  for( int i=1; i<N; ++i ){
-    if( q < x[i] ){
-      out = y[i-1] + (y[i]-y[i-1])/(x[i]-x[i-1]) * (q-x[i-1]);
-  } }
+  // Perform a binary search
+  while( highIndx - lowIndx > 1 ){
+    midIndx = lowIndx + (highIndx-lowIndx)/2;
+    if( q < x[midIndx] ){
+      highIndx = midIndx;
+    } else {
+      lowIndx = midIndx;
+    }
+  }
+  out = y[lowIndx] + (y[highIndx]-y[lowIndx])/(x[highIndx]-x[lowIndx]) * (q-x[lowIndx]);
+
   return out;
 }
 
@@ -331,8 +340,7 @@ void cimpl_linInterps( unsigned int const N, float const * const x, float const 
     while( q[qIndx] > x[xIndx] && q[qIndx] < x[xIndx+1] ){
       out[qIndx] = (y[xIndx+1]-y[xIndx])/(x[xIndx+1]-x[xIndx]) * (q[qIndx]-x[xIndx]);
       ++qIndx;
-    }
-  }
+  } }
 
   while( qIndx < M ){
     out[qIndx] = outOfBounds;
