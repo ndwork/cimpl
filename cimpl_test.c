@@ -106,6 +106,29 @@ int test_divideImgs(){
   return out;
 }
 
+int test_divideImgByScalar(){
+  cimpl_imgf myImg, result, answer;
+  unsigned int M=2;
+  unsigned int N=3;
+  unsigned int out;
+  
+  myImg = cimpl_mallocImg(M, N);
+  result = cimpl_mallocImg(M, N);
+  answer = cimpl_mallocImg(M, N);
+  
+  for( unsigned int i=1; i<=M*N; ++i ){
+    myImg.data[i-1] = 2*i;
+    answer.data[i-1] = i;
+  }
+  cimpl_divideImgByScalar(myImg, 2, &result);
+  out = cimpl_equalImgs(result, answer);
+  
+  cimpl_freeImg(&myImg);
+  cimpl_freeImg(&result);
+  cimpl_freeImg(&answer);
+  return out;
+}
+
 
 
 void cimpl_test(){
@@ -132,5 +155,11 @@ void cimpl_test(){
     printf("passed - cimpl_divideImgs\n");
   } else {
     printf("failed - cimpl_divideImgs\n");
+  }
+  
+  if( test_divideImgByScalar() ){
+    printf("passed - cimpl_divideImgByScalar\n");
+  } else {
+    printf("failed - cimpl_divideImgByScalar\n");
   }
 }
