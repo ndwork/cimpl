@@ -2,7 +2,7 @@
 //  main.c
 //  cimpl
 //
-//  Created by Nicholas Dwork on 9/18/16.
+//  Created by Nicholas Dwork starting on 9/18/16.
 //  Copyright © 2016 Nicholas Dwork.
 //
 
@@ -14,6 +14,7 @@ int main(int argc, const char * argv[]) {
 
   cimpl_imgf myImg, subImg, subImg2;
   cimpl_imgf tmp;
+
 
   // mallocImg
   printf("Testing mallocImg \n");
@@ -48,5 +49,6 @@ int main(int argc, const char * argv[]) {
   cimpl_freeImg( &myImg );
   cimpl_freeImg( &subImg );
   cimpl_freeImg( &subImg2 );
+
   return 0;
 }

@@ -2,7 +2,7 @@
 //  cimpl.c
 //  cimpl
 //
-//  Created by Nicholas Dwork on 9/18/16.
+//  Created by Nicholas Dwork starting on 9/18/16.
 //  Copyright © 2016 Nicholas Dwork.
 //
 
@@ -22,6 +22,15 @@ void cimpl_absImg( cimpl_imgf const in, cimpl_imgf * const out ){
   }
 }
 
+void cimpl_absVol( cimpl_volf const in, cimpl_volf * const out ){
+  assert( out->h == in.h );
+  assert( out->w == in.w );
+  assert( out->s == in.s );
+  for( int i=0; i<in.h*in.w*in.s; ++i ){
+    out->data[i] = fabsf(in.data[i]);
+  }
+}
+
 void cimpl_addImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out ){
   assert( out->w == img1.w );
   assert( out->h == img1.h );
@@ -32,10 +41,30 @@ void cimpl_addImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * c
   }
 }
 
+void cimpl_addVols( cimpl_volf const vol1, cimpl_volf const vol2, cimpl_volf * const out ){
+  assert( out->w == vol1.w );
+  assert( out->h == vol1.h );
+  assert( out->s == vol1.s );
+  assert( out->w == vol2.w );
+  assert( out->h == vol2.h );
+  assert( out->s == vol2.s );
+  for( int i=0; i<vol1.h*vol1.w*vol1.s; ++i){
+    out->data[i] = vol1.data[i] + vol2.data[i];
+  }
+}
+
 void cimpl_addScalar2Img( float const scalar, cimpl_imgf const in, cimpl_imgf * const out ){
   assert( out->h == in.h );
   assert( out->w == in.w );
   for( unsigned int i=0; i<in.w*in.h; ++i )
+    out->data[i] = in.data[i] + scalar;
+}
+
+void cimpl_addScalar2Vol( float const scalar, cimpl_volf const in, cimpl_volf * const out ){
+  assert( out->h == in.h );
+  assert( out->w == in.w );
+  assert( out->s == in.s );
+  for( unsigned int i=0; i<in.w*in.h*in.s; ++i )
     out->data[i] = in.data[i] + scalar;
 }
 
@@ -64,6 +93,7 @@ void cimpl_cropImg( cimpl_imgf const in, cimpl_imgf * const out ){
   assert( out->h <= in.h );
   int halfW, minW;
   int halfH, minH;
+  int colOffset, minColOffset;
 
   if( in.w % 2 == 0 )
     halfW = in.w/2;
@@ -83,9 +113,65 @@ void cimpl_cropImg( cimpl_imgf const in, cimpl_imgf * const out ){
   else
     minH = halfH - (out->h-1)/2;
 
-  for( int x=0; x<out->w; ++x ){
-    for( int y=0; y<out->h; ++y ){
-      out->data[y+x*out->h] = in.data[(minH+y)+(minW+x)*in.h];
+  for( unsigned int x=0; x<out->w; ++x ){
+    colOffset = x*out->h;
+    minColOffset = (minW+x)*in.h;
+
+    for( unsigned int y=0; y<out->h; ++y ){
+      out->data[y+colOffset] = in.data[ (minH+y)+ minColOffset ];
+    }
+  }
+}
+
+void cimpl_cropVol( cimpl_volf const in, cimpl_volf * const out ){
+  // Crops data to size of out
+  assert( out->w <= in.w );
+  assert( out->h <= in.h );
+  assert( out->s <= in.s );
+  int halfW, minW;
+  int halfH, minH;
+  int halfS, minS;
+  int minColOffset, minSliceOffset;
+  int colOffset, sliceOffset;
+  
+  if( in.w % 2 == 0 )
+    halfW = in.w/2;
+  else
+    halfW = (in.w-1)/2;
+  if( in.h % 2 == 0 )
+    halfH = in.h/2;
+  else
+    halfH = (in.h-1)/2;
+  if( in.s % 2 == 0 )
+    halfS = in.s/2;
+  else
+    halfS = (in.s-1)/2;
+  
+  if( out->w % 2 == 0 )
+    minW = halfW - out->w/2;
+  else
+    minW = halfW - (out->w-1)/2;
+  if( out->h % 2 == 0 )
+    minH = halfH - out->h/2;
+  else
+    minH = halfH - (out->h-1)/2;
+  if( out->s % 2 == 0 )
+    minS = halfS - out->s/2;
+  else
+    minS = halfS - (out->s-1)/2;
+
+  for( unsigned int z=0; z<out->s; ++z ){
+    sliceOffset = z*out->h*out->w;
+    minSliceOffset = (minS+z)*in.h*in.w;
+
+    for( unsigned int x=0; x<out->w; ++x ){
+      colOffset = x*out->h;
+      minColOffset = (minW+x)*in.h;
+
+      for( unsigned int y=0; y<out->h; ++y ){
+        out->data[y + colOffset + sliceOffset] =
+          in.data[ (minH+y) + minColOffset + minSliceOffset ];
+      }
     }
   }
 }
@@ -156,6 +242,23 @@ void cimpl_freeImg( cimpl_imgf *out ){
   out->h = 0;
 }
 
+float cimpl_linInterp( unsigned int const N, float const * const x, float const * const y,
+  float const extrapValue, float const q ){
+  // N is the number of values in the x and y arrays
+  // x is an array of inputs (or domain values) in ascending order
+  // y is an array of outputs (or range values) in ascending order
+  // extrapValue is the value to return if extrapolating
+  // q is the query domain value.
+
+  float out=extrapValue;
+  for( int i=0; i<N-1; ++i ){
+    if( q > x[i] ){
+      out = y[i] + (y[i+1]-y[i])/(x[i+1]-x[i]) * (q-x[i]);
+    }
+  }
+  return out;
+}
+
 void cimpl_linInterpImg( cimpl_imgf const img, unsigned int const N, float const * const xq,
   float const * const yq, float * const out ){
   unsigned int x1, x2, y1, y2;
@@ -175,7 +278,7 @@ cimpl_imgf cimpl_mallocImg( unsigned int const w, unsigned int const h ){
   cimpl_imgf out;
   out.w = w;
   out.h = h;
-  out.data = malloc( sizeof(float) * w * h );
+  out.data = (float*) malloc( sizeof(float) * w * h );
   return out;
 }
 
