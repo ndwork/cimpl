@@ -293,15 +293,53 @@ float cimpl_linInterp( unsigned int const N, float const * const x, float const 
   // outOfBounds is the value to return if extrapolating
   // q is the query domain value.
 
-  if( q < x[0] )
+  float out=outOfBounds;
+
+  if( q < x[0] || q > x[N-1] )
     return outOfBounds;
 
-  float out=outOfBounds;
   for( int i=1; i<N; ++i ){
     if( q < x[i] ){
       out = y[i-1] + (y[i]-y[i-1])/(x[i]-x[i-1]) * (q-x[i-1]);
   } }
   return out;
+}
+
+void cimpl_linInterps( unsigned int const N, float const * const x, float const * const y,
+                      float const outOfBounds, unsigned int const M, float const * const q,
+                      float * const out ){
+  // This function takes advantage of order of q for greater efficiency than calling
+  //   cimpl_linInterp multiple times.
+  // N is the number of values in the x and y arrays
+  // x is an array of inputs (or domain values) in ascending order
+  // y is an array of outputs (or range values) where y[i] corresponds to x[i]
+  // outOfBounds is the value to return if extrapolating
+  // M is the number of query values
+  // q are the query domain values in ascending order.
+
+  unsigned int qIndx=0;
+  unsigned int xIndx;
+
+  while( q[qIndx] < x[0] ){
+    out[qIndx] = outOfBounds;
+    qIndx++;
+    if( qIndx >= M )
+      return;
+  }
+
+  for( xIndx=0; xIndx<N-1; ++xIndx ){
+    while( q[qIndx] > x[xIndx] && q[qIndx] < x[xIndx+1] ){
+      out[qIndx] = (y[xIndx+1]-y[xIndx])/(x[xIndx+1]-x[xIndx]) * (q[qIndx]-x[xIndx]);
+      ++qIndx;
+    }
+  }
+
+  while( qIndx < M ){
+    out[qIndx] = outOfBounds;
+    ++qIndx;
+  }
+
+  return;
 }
 
 void cimpl_linInterpImg( cimpl_imgf const img, unsigned int const N, float const * const xq,

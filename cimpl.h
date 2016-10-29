@@ -44,6 +44,8 @@ cimpl_imgf cimpl_extractSubImg( cimpl_imgf const in, unsigned int const h1,
 void cimpl_freeImg( cimpl_imgf *out );
 float cimpl_linInterp( unsigned int const N, float const * const x, float const * const y,
   float const outOfBounds, float const q );
+void cimpl_linInterps( unsigned int const N, float const * const x, float const * const y,
+  float const outOfBounds, unsigned int const M, float const * const q, float * const out );
 void cimpl_linInterpImg( cimpl_imgf const img, unsigned int const N, float const * const xq,
   float const * const yq, float * const out );
 cimpl_imgf cimpl_mallocImg( unsigned int const w, unsigned int const h );
