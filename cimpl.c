@@ -246,18 +246,15 @@ int cimpl_equalVols( cimpl_volf const vol1, cimpl_volf const vol2 ){
   return 1;
 }
 
-cimpl_imgf cimpl_extractSubImg( cimpl_imgf const in, unsigned int const h1,
-  unsigned int const h2, unsigned int const v1, unsigned int const v2 ){
+void cimpl_extractSubImg( cimpl_imgf const in, unsigned int const h1,
+  unsigned int const w1, cimpl_imgf * const out ){
+  assert( h1+out->h < in.h );
+  assert( w1+out->w < in.w );
 
-  cimpl_imgf out = cimpl_mallocImg( h2-h1+1, v2-v1+1 );
-
-  for( int x=0; x<out.w; ++x ){
-    for( int y=0; y<out.h; ++y ){
-      // Column ordered data
-      out.data[y+x*out.h] = in.data[(v1+y)+(h1+x)*in.h];
+  for( unsigned int x=0; x<out->w; ++x ){
+    for( unsigned int y=0; y<out->h; ++y ){
+      out->data[y+x*out->h] = in.data[(w1+y)+(h1+x)*in.h];
   } }
-
-  return out;
 }
 
 void cimpl_freeImg( cimpl_imgf *out ){
@@ -371,6 +368,19 @@ void cimpl_multiplyImgByScalar( cimpl_imgf const in, float const scalar, cimpl_i
   assert( out->w == in.w );
   for( unsigned int i=0; i<in.w*in.h; ++i )
     out->data[i] = in.data[i] * scalar;
+}
+
+void cimpl_reshapeImg( unsigned int H, unsigned int W, cimpl_imgf * const out ){
+  assert( H*W == out->h*out->w );
+  out->h = H;
+  out->w = W;
+}
+
+void cimpl_reshapeVol( unsigned int H, unsigned int W, unsigned int S, cimpl_volf * const out ){
+  assert( H*W*S == out->h*out->w*out->s );
+  out->h = H;
+  out->w = W;
+  out->s = S;
 }
 
 void cimpl_subtractImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out ){
