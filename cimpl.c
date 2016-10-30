@@ -395,6 +395,16 @@ void cimpl_rot180( cimpl_imgf const in, cimpl_imgf * const out ){
     out->data[i] = in.data[imgSize-i-1];
 }
 
+void cimpl_rot270( cimpl_imgf const in, cimpl_imgf * const out ){
+  assert( out->h == in.w );
+  assert( out->w == in.h );
+  assert( out->data != in.data );
+  for( unsigned int x=0; x<out->w; ++x ){
+    for( unsigned int y=0; y<out->h; ++y ){
+      out->data[y+x*out->h] = in.data[(out->w-x-1)+y*in.h];
+  } }
+}
+
 void cimpl_subImg( cimpl_imgf const in, unsigned int const h1, unsigned int const w1,
   cimpl_imgf * const out ){
   assert( h1+out->h < in.h );

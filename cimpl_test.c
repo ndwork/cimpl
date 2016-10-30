@@ -222,6 +222,29 @@ int test_rot180(){
   return out;
 }
 
+int test_rot270(){
+  cimpl_imgf myImg, result, answer;
+  unsigned int M, N, out;
+  float answerValues[6] = {1, 3, 5, 0, 2, 4};
+  M=2; N=3;
+
+  myImg = cimpl_mallocImg(M,N);
+  result = cimpl_mallocImg(N,M);
+  answer = cimpl_mallocImg(N,M);
+
+  for( unsigned int i=0; i<myImg.h*myImg.w; ++i ){
+    myImg.data[i] = i;
+  }
+  cimpl_rot270( myImg, &result );
+  memcpy( answer.data, answerValues, sizeof(float)*answer.h*answer.w );
+  out = cimpl_equalImgs(result, answer);
+
+  cimpl_freeImg(&myImg);
+  cimpl_freeImg(&result);
+  cimpl_freeImg(&answer);
+  return out;
+}
+
 int test_sumImg(){
   cimpl_imgf myImg;
   float result, answer;
@@ -292,6 +315,12 @@ void cimpl_test(){
     printf("passed - cimpl_rot180\n");
   } else {
     printf("failed - cimpl_rot180\n");
+  }
+
+  if( test_rot270() ){
+    printf("passed - cimpl_rot270\n");
+  } else {
+    printf("failed - cimpl_rot270\n");
   }
 
   if( test_sumImg() ){

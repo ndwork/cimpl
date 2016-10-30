@@ -53,6 +53,7 @@ void cimpl_reshapeImg( unsigned int H, unsigned int W, cimpl_imgf * const out );
 void cimpl_reshapeVol( unsigned int H, unsigned int W, unsigned int S, cimpl_volf * const out );
 void cimpl_rot90( cimpl_imgf const in, cimpl_imgf * const out );
 void cimpl_rot180( cimpl_imgf const in, cimpl_imgf * const out );
+void cimpl_rot270( cimpl_imgf const in, cimpl_imgf * const out );
 void cimpl_subImg( cimpl_imgf const in, unsigned int const h1, unsigned int const v1,
   cimpl_imgf * const out );
 void cimpl_subtractImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out );
