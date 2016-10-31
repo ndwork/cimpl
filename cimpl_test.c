@@ -131,6 +131,29 @@ int test_addScalar2Img(){
   return out;
 }
 
+int test_addScalar2Vol(){
+  cimpl_volf myVol, result, answer;
+  unsigned int H=2;
+  unsigned int W=3;
+  unsigned int S=4;
+  unsigned int out;
+  myVol = cimpl_mallocVol(H,W,S);
+  result = cimpl_mallocVol(H,W,S);
+  answer = cimpl_mallocVol(H,W,S);
+
+  for( unsigned int i=0; i<H*W*S; ++i ){
+    myVol.data[i] = i;
+    answer.data[i] = i + 8;
+  }
+  cimpl_addScalar2Vol(8, myVol, &result);
+  out = cimpl_equalVols(result, answer);
+
+  cimpl_freeVol(&myVol);
+  cimpl_freeVol(&answer);
+  cimpl_freeVol(&result);
+  return out;
+}
+
 int test_divideImgs(){
   cimpl_imgf img1, img2, result, answer;
   unsigned int M=2;
@@ -404,6 +427,12 @@ void cimpl_test(){
     printf("passed - cimpl_addScalar2Img\n");
   } else {
     printf("failed - cimpl_addScalar2Img\n");
+  }
+
+  if( test_addScalar2Vol() ){
+    printf("passed - cimpl_addScalar2Vol\n");
+  } else {
+    printf("failed - cimpl_addScalar2Vol\n");
   }
 
   if( test_divideImgs() ){
