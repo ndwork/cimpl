@@ -14,6 +14,13 @@
 
 
 
+void cimpl_absCmpImg( cimpl_cmpImgf const in, cimpl_imgf * const out ){
+  assert( out->h == in.h );
+  assert( out->w == in.w );
+  for( unsigned int i=0; i<in.h*in.w; ++i )
+    out->data[i] = sqrtf( in.r.data[i]*in.r.data[i] + in.i.data[i]*in.i.data[i] );
+}
+
 void cimpl_absImg( cimpl_imgf const in, cimpl_imgf * const out ){
   assert( out->h == in.h );
   assert( out->w == in.w );
@@ -27,6 +34,12 @@ void cimpl_absVol( cimpl_volf const in, cimpl_volf * const out ){
   assert( out->s == in.s );
   for( int i=0; i<in.h*in.w*in.s; ++i )
     out->data[i] = fabsf(in.data[i]);
+}
+
+void cimpl_addCmpImgs( cimpl_cmpImgf const img1, cimpl_cmpImgf const img2,
+                      cimpl_cmpImgf * const out ){
+  cimpl_addImgs(img1.r, img2.r, &out->r);
+  cimpl_addImgs(img1.i, img2.i, &out->i);
 }
 
 void cimpl_addImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out ){
@@ -102,31 +115,37 @@ void cimpl_circShiftVol( cimpl_volf const in, int hShift, int vShift, int sShift
   } } }
 }
 
+void cimpl_conjCmpImg( cimpl_cmpImgf const in, cimpl_cmpImgf * const out ){
+  assert( out->h = in.h );
+  assert( out->w = in.w );
+  cimpl_multiplyImgByScalar(in.i, -1, &out->i);
+}
+
 void cimpl_cropImg( cimpl_imgf const in, cimpl_imgf * const out ){
   // Crops data to size of out
-  assert( out->w <= in.w );
   assert( out->h <= in.h );
-  int halfW, minW;
+  assert( out->w <= in.w );
   int halfH, minH;
+  int halfW, minW;
   int colOffset, minColOffset;
 
-  if( in.w % 2 == 0 )
-    halfW = in.w/2;
-  else
-    halfW = (in.w-1)/2;
   if( in.h % 2 == 0 )
     halfH = in.h/2;
   else
     halfH = (in.h-1)/2;
-
-  if( out->w % 2 == 0 )
-    minW = halfW - out->w/2;
+  if( in.w % 2 == 0 )
+    halfW = in.w/2;
   else
-    minW = halfW - (out->w-1)/2;
+    halfW = (in.w-1)/2;
+
   if( out->h % 2 == 0 )
     minH = halfH - out->h/2;
   else
     minH = halfH - (out->h-1)/2;
+  if( out->w % 2 == 0 )
+    minW = halfW - out->w/2;
+  else
+    minW = halfW - (out->w-1)/2;
 
   for( unsigned int x=0; x<out->w; ++x ){
     colOffset = x*out->h;
@@ -142,33 +161,33 @@ void cimpl_cropVol( cimpl_volf const in, cimpl_volf * const out ){
   assert( out->w <= in.w );
   assert( out->h <= in.h );
   assert( out->s <= in.s );
-  int halfW, minW;
   int halfH, minH;
+  int halfW, minW;
   int halfS, minS;
   int minColOffset, minSliceOffset;
   int colOffset, sliceOffset;
-  
-  if( in.w % 2 == 0 )
-    halfW = in.w/2;
-  else
-    halfW = (in.w-1)/2;
+
   if( in.h % 2 == 0 )
     halfH = in.h/2;
   else
     halfH = (in.h-1)/2;
+  if( in.w % 2 == 0 )
+    halfW = in.w/2;
+  else
+    halfW = (in.w-1)/2;
   if( in.s % 2 == 0 )
     halfS = in.s/2;
   else
     halfS = (in.s-1)/2;
-  
-  if( out->w % 2 == 0 )
-    minW = halfW - out->w/2;
-  else
-    minW = halfW - (out->w-1)/2;
+
   if( out->h % 2 == 0 )
     minH = halfH - out->h/2;
   else
     minH = halfH - (out->h-1)/2;
+  if( out->w % 2 == 0 )
+    minW = halfW - out->w/2;
+  else
+    minW = halfW - (out->w-1)/2;
   if( out->s % 2 == 0 )
     minS = halfS - out->s/2;
   else
@@ -260,6 +279,13 @@ void cimpl_flipImgUD( cimpl_imgf const in, cimpl_imgf * const out ){
     for( int y=0; y<in.h; ++y ){
       out->data[y+x*in.h] = in.data[(in.h-y-1)+x*in.h];
   } }
+}
+
+void cimpl_freeCmpImg( cimpl_cmpImgf * const in ){
+  in->h = 0;
+  in->w = 0;
+  cimpl_freeImg(&in->r);
+  cimpl_freeImg(&in->i);
 }
 
 void cimpl_freeImg( cimpl_imgf *in ){
@@ -358,6 +384,15 @@ void cimpl_linInterpImg( cimpl_imgf const img, unsigned int const N, float const
       tmpX2 = (y2-yq[i])*img.data[y1+x2*img.h] + (yq[i]-y1)*img.data[y2+x2*img.h];
       out[i] = (x2-xq[i])*tmpX1 + (xq[i]-x1)*tmpX2;
   } }
+}
+
+cimpl_cmpImgf cimpl_mallocCmpImg( unsigned int const h, unsigned int const w ){
+  cimpl_cmpImgf out;
+  out.h = h;
+  out.w = w;
+  out.r = cimpl_mallocImg(h, w);
+  out.i = cimpl_mallocImg(h, w);
+  return out;
 }
 
 cimpl_imgf cimpl_mallocImg( unsigned int const h, unsigned int const w ){
