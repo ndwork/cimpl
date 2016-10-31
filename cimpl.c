@@ -262,11 +262,19 @@ void cimpl_flipImgUD( cimpl_imgf const in, cimpl_imgf * const out ){
   } }
 }
 
-void cimpl_freeImg( cimpl_imgf *out ){
-  out->w = 0;
-  out->h = 0;
-  free( out->data );
-  out->data = NULL;
+void cimpl_freeImg( cimpl_imgf *in ){
+  in->h = 0;
+  in->w = 0;
+  free( in->data );
+  in->data = NULL;
+}
+
+void cimpl_freeVol( cimpl_volf * const in ){
+  in->h = 0;
+  in->w = 0;
+  in->s = 0;
+  free( in->data );
+  in->data = NULL;
 }
 
 float cimpl_linInterp( unsigned int const N, float const * const x, float const * const y,
@@ -357,6 +365,15 @@ cimpl_imgf cimpl_mallocImg( unsigned int const h, unsigned int const w ){
   out.h = h;
   out.w = w;
   out.data = (float*) malloc( sizeof(float) * w * h );
+  return out;
+}
+
+cimpl_volf cimpl_mallocVol( unsigned int const h, unsigned int const w, unsigned int s ){
+  cimpl_volf out;
+  out.h = h;
+  out.w = w;
+  out.s = s;
+  out.data = (float*) malloc( sizeof(float) * w * h * s );
   return out;
 }
 
@@ -484,5 +501,11 @@ float cimpl_sumImg( cimpl_imgf const * const in ){
   return out;
 }
 
+float cimpl_sumVol( cimpl_volf const * const in ){
+  float out=0;
+  for( int i=0; i<in->h*in->w*in->s; ++i)
+    out += in->data[i];
+  return out;
+}
 
 

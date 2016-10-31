@@ -15,14 +15,14 @@
 
 int test_absImg(){
   cimpl_imgf myImg, result, answer;
-  unsigned int M=2;
-  unsigned int N=3;
+  unsigned int H=2;
+  unsigned int W=3;
   unsigned int out;
-  myImg = cimpl_mallocImg(M,N);
-  answer = cimpl_mallocImg(M,N);
-  result = cimpl_mallocImg(M,N);
+  myImg = cimpl_mallocImg(H,W);
+  answer = cimpl_mallocImg(H,W);
+  result = cimpl_mallocImg(H,W);
 
-  for( unsigned int i=0; i<M*N; ++i ){
+  for( unsigned int i=0; i<H*W; ++i ){
     myImg.data[i] = pow(-1,i) * i;
     answer.data[i] = i;
   }
@@ -30,21 +30,45 @@ int test_absImg(){
   out = cimpl_equalImgs(result, answer);
 
   cimpl_freeImg(&myImg);
+  cimpl_freeImg(&result);
   cimpl_freeImg(&answer);
+  return out;
+}
+
+int test_absVol(){
+  cimpl_volf myVol, result, answer;
+  unsigned int H=2;
+  unsigned int W=3;
+  unsigned int S=4;
+  unsigned int out;
+  myVol = cimpl_mallocVol(H,W,S);
+  answer = cimpl_mallocVol(H,W,S);
+  result = cimpl_mallocVol(H,W,S);
+  
+  for( unsigned int i=0; i<H*W*S; ++i ){
+    myVol.data[i] = pow(-1,i) * i;
+    answer.data[i] = i;
+  }
+  cimpl_absVol( myVol, &result );
+  out = cimpl_equalVols(result, answer);
+  
+  cimpl_freeVol(&myVol);
+  cimpl_freeVol(&result);
+  cimpl_freeVol(&answer);
   return out;
 }
 
 int test_addImgs(){
   cimpl_imgf img1, img2, result, answer;
-  unsigned int M=2;
-  unsigned int N=3;
+  unsigned int H=2;
+  unsigned int W=3;
   unsigned int out;
-  img1 = cimpl_mallocImg(M,N);
-  img2 = cimpl_mallocImg(M,N);
-  answer = cimpl_mallocImg(M,N);
-  result = cimpl_mallocImg(M,N);
+  img1 = cimpl_mallocImg(H,W);
+  img2 = cimpl_mallocImg(H,W);
+  answer = cimpl_mallocImg(H,W);
+  result = cimpl_mallocImg(H,W);
 
-  for( unsigned int i=0; i<M*N; ++i ){
+  for( unsigned int i=0; i<H*W; ++i ){
     img1.data[i] = i;
     img2.data[i] = i;
     answer.data[i] = 2*i;
@@ -56,6 +80,32 @@ int test_addImgs(){
   cimpl_freeImg(&img2);
   cimpl_freeImg(&answer);
   cimpl_freeImg(&result);
+  return out;
+}
+
+int test_addVols(){
+  cimpl_volf vol1, vol2, result, answer;
+  unsigned int H=2;
+  unsigned int W=3;
+  unsigned int S=3;
+  unsigned int out;
+  vol1 = cimpl_mallocVol(H,W,S);
+  vol2 = cimpl_mallocVol(H,W,S);
+  answer = cimpl_mallocVol(H,W,S);
+  result = cimpl_mallocVol(H,W,S);
+  
+  for( unsigned int i=0; i<H*W*S; ++i ){
+    vol1.data[i] = i;
+    vol2.data[i] = i;
+    answer.data[i] = 2*i;
+  }
+  cimpl_addVols( vol1, vol2, &result );
+  out = cimpl_equalVols(result, answer);
+  
+  cimpl_freeVol(&vol1);
+  cimpl_freeVol(&vol2);
+  cimpl_freeVol(&answer);
+  cimpl_freeVol(&result);
   return out;
 }
 
@@ -284,13 +334,13 @@ int test_rot270(){
 int test_sumImg(){
   cimpl_imgf myImg;
   float result, answer;
-  unsigned int M=2;
-  unsigned int N=3;
+  unsigned int H=2;
+  unsigned int W=3;
   unsigned int out;
-  myImg = cimpl_mallocImg(M,N);
+  myImg = cimpl_mallocImg(H,W);
 
   answer = 0;
-  for( unsigned int i=0; i<M*N; ++i ){
+  for( unsigned int i=0; i<H*W; ++i ){
     myImg.data[i] = (float) i/3;
     answer += (float) i/3;
   }
@@ -298,6 +348,27 @@ int test_sumImg(){
   out = ( result == answer );
   
   cimpl_freeImg(&myImg);
+  return out;
+}
+
+int test_sumVol(){
+  cimpl_volf myVol;
+  float result, answer;
+  unsigned int H=2;
+  unsigned int W=3;
+  unsigned int S=3;
+  unsigned int out;
+  myVol = cimpl_mallocVol(H, W, S);
+
+  answer = 0;
+  for( unsigned int i=0; i<H*W*S; ++i ){
+    myVol.data[i] = (float) i/3;
+    answer += (float) i/3;
+  }
+  result = cimpl_sumVol(&myVol);
+  out = ( result == answer );
+
+  cimpl_freeVol(&myVol);
   return out;
 }
 
@@ -311,10 +382,22 @@ void cimpl_test(){
     printf("failed - cimpl_absImg\n");
   }
 
+  if( test_absVol() ){
+    printf("passed - cimpl_absVol\n");
+  } else {
+    printf("failed - cimpl_absVol\n");
+  }
+
   if( test_addImgs() ){
     printf("passed - cimpl_addImgs\n");
   } else {
     printf("failed - cimpl_addImgs\n");
+  }
+
+  if( test_addVols() ){
+    printf("passed - cimpl_addVols\n");
+  } else {
+    printf("failed - cimpl_addVols\n");
   }
 
   if( test_addScalar2Img() ){
@@ -376,5 +459,11 @@ void cimpl_test(){
   } else {
     printf("failed - cimpl_sumImg\n");
   }
-  
+
+  if( test_sumVol() ){
+    printf("passed - cimpl_sumVol\n");
+  } else {
+    printf("failed - cimpl_sumVol\n");
+  }
+
 }
