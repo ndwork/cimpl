@@ -9,6 +9,10 @@
 #ifndef cimpl_h
 #define cimpl_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
   unsigned int h;  // height
   unsigned int w;  // width
@@ -80,5 +84,9 @@ void cimpl_subtractScalarFromImg( cimpl_imgf const in, float const scalar, cimpl
 float cimpl_sumImg( cimpl_imgf const * const in );
 float cimpl_sumVol( cimpl_volf const * const in );
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* cimpl_h */
