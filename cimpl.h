@@ -22,8 +22,8 @@ typedef struct {
 typedef struct {
   unsigned int h;  // height
   unsigned int w;  // width
-  cimpl_imgf r;
-  cimpl_imgf i;
+  float* rData;  // real
+  float* iData;  // imaginary
 } cimpl_cmpImgf;
 
 typedef struct {

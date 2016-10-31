@@ -18,7 +18,7 @@ void cimpl_absCmpImg( cimpl_cmpImgf const in, cimpl_imgf * const out ){
   assert( out->h == in.h );
   assert( out->w == in.w );
   for( unsigned int i=0; i<in.h*in.w; ++i )
-    out->data[i] = sqrtf( in.r.data[i]*in.r.data[i] + in.i.data[i]*in.i.data[i] );
+    out->data[i] = sqrtf( in.rData[i]*in.rData[i] + in.iData[i]*in.iData[i] );
 }
 
 void cimpl_absImg( cimpl_imgf const in, cimpl_imgf * const out ){
@@ -38,8 +38,14 @@ void cimpl_absVol( cimpl_volf const in, cimpl_volf * const out ){
 
 void cimpl_addCmpImgs( cimpl_cmpImgf const img1, cimpl_cmpImgf const img2,
                       cimpl_cmpImgf * const out ){
-  cimpl_addImgs(img1.r, img2.r, &out->r);
-  cimpl_addImgs(img1.i, img2.i, &out->i);
+  assert( out->h == img1.h );
+  assert( out->w == img1.w );
+  assert( out->h == img2.h );
+  assert( out->w == img2.w );
+  for( unsigned int i=0; i<img1.h*img1.w; ++i ){
+    out->rData[i] = img1.rData[i] + img2.rData[i];
+    out->iData[i] = img1.iData[i] + img2.iData[i];
+  }
 }
 
 void cimpl_addImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out ){
@@ -118,7 +124,9 @@ void cimpl_circShiftVol( cimpl_volf const in, int hShift, int vShift, int sShift
 void cimpl_conjCmpImg( cimpl_cmpImgf const in, cimpl_cmpImgf * const out ){
   assert( out->h = in.h );
   assert( out->w = in.w );
-  cimpl_multiplyImgByScalar(in.i, -1, &out->i);
+  for( unsigned int i =0; i<in.h*in.w; ++i ){
+    out->iData[i] = -in.iData[i];
+  }
 }
 
 void cimpl_cropImg( cimpl_imgf const in, cimpl_imgf * const out ){
@@ -284,8 +292,8 @@ void cimpl_flipImgUD( cimpl_imgf const in, cimpl_imgf * const out ){
 void cimpl_freeCmpImg( cimpl_cmpImgf * const in ){
   in->h = 0;
   in->w = 0;
-  cimpl_freeImg(&in->r);
-  cimpl_freeImg(&in->i);
+  free( in->rData );  in->rData = NULL;
+  free( in->iData );  in->iData = NULL;
 }
 
 void cimpl_freeImg( cimpl_imgf *in ){
@@ -390,8 +398,8 @@ cimpl_cmpImgf cimpl_mallocCmpImg( unsigned int const h, unsigned int const w ){
   cimpl_cmpImgf out;
   out.h = h;
   out.w = w;
-  out.r = cimpl_mallocImg(h, w);
-  out.i = cimpl_mallocImg(h, w);
+  out.rData = (float*) malloc( sizeof(float) * w * h );
+  out.iData = (float*) malloc( sizeof(float) * w * h );
   return out;
 }
 
