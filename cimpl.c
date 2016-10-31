@@ -188,15 +188,6 @@ void cimpl_cropVol( cimpl_volf const in, cimpl_volf * const out ){
   } } }
 }
 
-void cimpl_displayImg( cimpl_imgf const in ){
-  for( unsigned int y=0; y<in.h; ++y ){
-    for( unsigned int x=0; x<in.w; ++x ){
-      printf( "%f ", in.data[y+x*in.h] );
-    }
-    printf( "\n" );
-  }
-}
-
 void cimpl_divideImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out ){
   assert( out->w == img1.w );
   assert( out->h == img1.h );
@@ -247,6 +238,26 @@ int cimpl_equalVols( cimpl_volf const vol1, cimpl_volf const vol2 ){
       return 0;
   } }
   return 1;
+}
+
+void cimpl_flipImgLR( cimpl_imgf const in, cimpl_imgf * const out ){
+  assert( out->h == in.h );
+  assert( out->w == in.w );
+  assert( out->data != in.data );
+  for( int x=0; x<in.w; ++x ){
+    for( int y=0; y<in.h; ++y ){
+      out->data[y+x*in.h] = in.data[y+(in.w-x-1)*in.h];
+  } }
+}
+
+void cimpl_flipImgUD( cimpl_imgf const in, cimpl_imgf * const out ){
+  assert( out->h == in.h );
+  assert( out->w == in.w );
+  assert( out->data != in.data );
+  for( int x=0; x<in.w; ++x ){
+    for( int y=0; y<in.h; ++y ){
+      out->data[y+x*in.h] = in.data[(in.h-y-1)+x*in.h];
+  } }
 }
 
 void cimpl_freeImg( cimpl_imgf *out ){
@@ -363,6 +374,15 @@ void cimpl_multiplyImgByScalar( cimpl_imgf const in, float const scalar, cimpl_i
     out->data[i] = in.data[i] * scalar;
 }
 
+void cimpl_printImg( cimpl_imgf const in ){
+  for( unsigned int y=0; y<in.h; ++y ){
+    for( unsigned int x=0; x<in.w; ++x ){
+      printf( "%f ", in.data[y+x*in.h] );
+    }
+    printf( "\n" );
+  }
+}
+
 void cimpl_reshapeImg( unsigned int H, unsigned int W, cimpl_imgf * const out ){
   assert( H*W == out->h*out->w );
   out->h = H;
@@ -375,6 +395,22 @@ void cimpl_reshapeVol( unsigned int H, unsigned int W, unsigned int S, cimpl_vol
   out->w = W;
   out->s = S;
 }
+
+//void cimpl_rot( cimpl_imgf const in, float const angle, cimpl_imgf * const out ){
+//  // angle has units of radians
+//  float sAngle, cAngle;
+//  unsigned int cx, cy;
+//
+//  sAngle = sin( angle );
+//  cAngle = cos( angle );
+//  cx = ceil( (float) out->w / 2 );
+//  cy = ceil( (float) out->h / 2 );
+//
+//  for( int x=0; x<out->w; ++x){
+//    for( int y=0; y<out->h; ++y){
+//
+//  } }
+//}
 
 void cimpl_rot90( cimpl_imgf const in, cimpl_imgf * const out ){
   assert( out->h == in.w );
@@ -423,6 +459,13 @@ void cimpl_subtractImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_img
   assert( out->h == img2.h );
   for( int i=0; i<img1.h*img1.w; ++i)
     out->data[i] = img1.data[i] - img2.data[i];
+}
+
+void cimpl_subtractImgFromScalar( cimpl_imgf const in, float const scalar, cimpl_imgf * const out ){
+  assert( out->w == in.w );
+  assert( out->h == in.h );
+  for( unsigned int i=0; i<in.w*in.h; ++i )
+    out->data[i] = scalar - in.data[i];
 }
 
 void cimpl_subtractScalarFromImg( cimpl_imgf const in, float const scalar, cimpl_imgf * const out ){

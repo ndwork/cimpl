@@ -129,6 +129,42 @@ int test_divideImgByScalar(){
   return out;
 }
 
+int test_flipImgLR(){
+  cimpl_imgf myImg, result, answer;
+  unsigned int out;
+  myImg = cimpl_mallocImg(3, 3);
+  result = cimpl_mallocImg(3, 3);
+  answer = cimpl_mallocImg(3, 3);
+
+  for( int x=0; x<myImg.w; ++x ){
+    for( int y=0; y<myImg.h; ++y ){
+      myImg.data[y+x*myImg.h] = y+x*myImg.h;
+      answer.data[y+x*myImg.h] = y+(myImg.w-x-1)*myImg.h;
+  } }
+  cimpl_flipImgLR(myImg, &result);
+  out = cimpl_equalImgs(result, answer);
+  
+  return out;
+}
+
+int test_flipImgUD(){
+  cimpl_imgf myImg, result, answer;
+  unsigned int out;
+  myImg = cimpl_mallocImg(3, 3);
+  result = cimpl_mallocImg(3, 3);
+  answer = cimpl_mallocImg(3, 3);
+  
+  for( int x=0; x<myImg.w; ++x ){
+    for( int y=0; y<myImg.h; ++y ){
+      myImg.data[y+x*myImg.h] = y+x*myImg.h;
+      answer.data[y+x*myImg.h] = (myImg.h-y-1)+x*myImg.h;
+    } }
+  cimpl_flipImgUD(myImg, &result);
+  out = cimpl_equalImgs(result, answer);
+
+  return out;
+}
+
 int test_multiplyImgs(){
   cimpl_imgf img1, img2, result, answer;
   unsigned int M=2;
@@ -297,6 +333,18 @@ void cimpl_test(){
     printf("passed - cimpl_divideImgByScalar\n");
   } else {
     printf("failed - cimpl_divideImgByScalar\n");
+  }
+
+  if( test_flipImgLR() ){
+    printf("passed - cimpl_flipImgLR\n");
+  } else {
+    printf("failed - cimpl_flipImgLR\n");
+  }
+
+  if( test_flipImgUD() ){
+    printf("passed - cimpl_flipImgUD\n");
+  } else {
+    printf("failed - cimpl_flipImgUD\n");
   }
 
   if( test_multiplyImgs() ){
