@@ -445,6 +445,12 @@ void cimpl_printImg( cimpl_imgf const in ){
   }
 }
 
+void cimpl_reshapeCmpImg( unsigned int H, unsigned int W, cimpl_cmpImgf * const img ){
+  assert( H*W == img->h*img->w );
+  img->h = H;
+  img->w = W;
+}
+
 void cimpl_reshapeImg( unsigned int H, unsigned int W, cimpl_imgf * const out ){
   assert( H*W == out->h*out->w );
   out->h = H;
@@ -500,6 +506,36 @@ void cimpl_rot270( cimpl_imgf const in, cimpl_imgf * const out ){
   for( unsigned int x=0; x<out->w; ++x ){
     for( unsigned int y=0; y<out->h; ++y ){
       out->data[y+x*out->h] = in.data[(out->w-x-1)+y*in.h];
+  } }
+}
+
+void cimpl_sliceX( cimpl_volf const in, unsigned int xIndx, cimpl_imgf * const out ){
+  assert( in.h == out->h );
+  assert( in.s == out->w );
+  assert( xIndx < in.w );
+  for( unsigned int x=0; x<out->w; ++x ){
+    for( unsigned int y=0; y<out->h; ++y ){
+      out->data[y+x*out->h] = in.data[ y+xIndx*in.h+x*out->h*out->w ];
+  } }
+}
+
+void cimpl_sliceY( cimpl_volf const in, unsigned int yIndx, cimpl_imgf * const out ){
+  assert( in.w == out->h );
+  assert( in.s == out->w );
+  assert( yIndx < in.w );
+  for( unsigned int x=0; x<out->w; ++x ){
+    for( unsigned int y=0; y<out->h; ++y ){
+      out->data[y+x*out->h] = in.data[ yIndx+x*in.h+y*out->h*out->w ];
+  } }
+}
+
+void cimpl_sliceZ( cimpl_volf const in, unsigned int zIndx, cimpl_imgf * const out ){
+  assert( in.h == out->h );
+  assert( in.w == out->w );
+  assert( zIndx < in.s );
+  for( unsigned int x=0; x<out->w; ++x ){
+    for( unsigned int y=0; y<out->h; ++y ){
+      out->data[y+x*out->h] = in.data[ y+x*out->h+zIndx*in.h*in.w ];
   } }
 }
 

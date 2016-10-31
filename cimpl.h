@@ -70,12 +70,16 @@ cimpl_volf cimpl_mallocVol( unsigned int const h, unsigned int const w, unsigned
 void cimpl_multiplyImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out );
 void cimpl_multiplyImgByScalar( cimpl_imgf const in, float const scalar, cimpl_imgf * const out );
 void cimpl_printImg( cimpl_imgf const in );
+void cimpl_reshapeCmpImg( unsigned int H, unsigned int W, cimpl_cmpImgf * const img );
 void cimpl_reshapeImg( unsigned int H, unsigned int W, cimpl_imgf * const out );
 void cimpl_reshapeVol( unsigned int H, unsigned int W, unsigned int S, cimpl_volf * const out );
 //void cimpl_rot( cimpl_imgf const in, float const angle, cimpl_imgf * const out );
 void cimpl_rot90( cimpl_imgf const in, cimpl_imgf * const out );
 void cimpl_rot180( cimpl_imgf const in, cimpl_imgf * const out );
 void cimpl_rot270( cimpl_imgf const in, cimpl_imgf * const out );
+void cimpl_sliceX( cimpl_volf const in, unsigned int xIndx, cimpl_imgf * const out );
+void cimpl_sliceY( cimpl_volf const in, unsigned int yIndx, cimpl_imgf * const out );
+void cimpl_sliceZ( cimpl_volf const in, unsigned int zIndx, cimpl_imgf * const out );
 void cimpl_subImg( cimpl_imgf const in, unsigned int const h1, unsigned int const v1,
   cimpl_imgf * const out );
 void cimpl_subtractImgs( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out );
