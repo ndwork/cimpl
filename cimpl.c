@@ -241,6 +241,7 @@ int cimpl_equalVols( cimpl_volf const vol1, cimpl_volf const vol2 ){
 }
 
 void cimpl_flipImgLR( cimpl_imgf const in, cimpl_imgf * const out ){
+  // Flip image left/right
   assert( out->h == in.h );
   assert( out->w == in.w );
   assert( out->data != in.data );
@@ -251,6 +252,7 @@ void cimpl_flipImgLR( cimpl_imgf const in, cimpl_imgf * const out ){
 }
 
 void cimpl_flipImgUD( cimpl_imgf const in, cimpl_imgf * const out ){
+  // Flip image up/down
   assert( out->h == in.h );
   assert( out->w == in.w );
   assert( out->data != in.data );
