@@ -78,7 +78,10 @@ void cimpl_rot90( cimpl_imgf const in, cimpl_imgf * const out );
 void cimpl_rot180( cimpl_imgf const in, cimpl_imgf * const out );
 void cimpl_rot270( cimpl_imgf const in, cimpl_imgf * const out );
 void cimpl_sliceX( cimpl_volf const in, unsigned int xIndx, cimpl_imgf * const out );
+void cimpl_sliceXZ( cimpl_volf const in, unsigned int xIndx, unsigned int zIndx, float * const out );
 void cimpl_sliceY( cimpl_volf const in, unsigned int yIndx, cimpl_imgf * const out );
+void cimpl_sliceYX( cimpl_volf const in, unsigned int yIndx, unsigned int xIndx, float * const out );
+void cimpl_sliceYZ( cimpl_volf const in, unsigned int yIndx, unsigned int zIndx, float * const out );
 void cimpl_sliceZ( cimpl_volf const in, unsigned int zIndx, cimpl_imgf * const out );
 void cimpl_subImg( cimpl_imgf const in, unsigned int const h1, unsigned int const v1,
   cimpl_imgf * const out );
