@@ -509,6 +509,18 @@ void cimpl_rot270( cimpl_imgf const in, cimpl_imgf * const out ){
   } }
 }
 
+void cimpl_sliceImgX( cimpl_imgf const in, unsigned int xIndx, float * const out ){
+  assert( xIndx < in.w );
+  for( unsigned int y=0; y<in.h; ++y )
+    out[y] = in.data[y+xIndx*in.h];
+}
+
+void cimpl_sliceImgY( cimpl_imgf const in, unsigned int yIndx, float * const out ){
+  assert( yIndx < in.h );
+  for( unsigned int x=0; x<in.h; ++x )
+    out[x] = in.data[yIndx+x*in.h];
+}
+
 void cimpl_sliceX( cimpl_volf const in, unsigned int xIndx, cimpl_imgf * const out ){
   assert( in.h == out->h );
   assert( in.s == out->w );
