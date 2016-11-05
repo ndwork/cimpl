@@ -744,4 +744,11 @@ void cimpl_zeroImg( cimpl_img * const img  ){
     img->data[i] = 0;
 }
 
+void cimpl_zeroVol( cimpl_vol * const vol  ){
+  // Sets all values of volume to 0
+  assert( vol->data != NULL );
+  for( size_t i=0; i<vol->h*vol->w*vol->w; ++i )
+    vol->data[i] = 0;
+}
+
 

@@ -99,7 +99,9 @@ void cimpl_subtractImgFromScalar( cimpl_img const in, float const scalar, cimpl_
 void cimpl_subtractScalarFromImg( cimpl_img const in, float const scalar, cimpl_img * const out );
 float cimpl_sumImg( cimpl_img const * const in );
 float cimpl_sumVol( cimpl_vol const * const in );
+void cimpl_zeroCmpImg( cimpl_cmpImg * const img  );
 void cimpl_zeroImg( cimpl_img * const in  );
+void cimpl_zeroVol( cimpl_vol * const in  );
 
 
 #ifdef __cplusplus
