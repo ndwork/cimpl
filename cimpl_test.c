@@ -14,7 +14,7 @@
 
 
 int test_absImg(){
-  cimpl_imgf myImg, result, answer;
+  cimpl_img myImg, result, answer;
   size_t H=2;
   size_t W=3;
   int out;
@@ -36,7 +36,7 @@ int test_absImg(){
 }
 
 int test_absVol(){
-  cimpl_volf myVol, result, answer;
+  cimpl_vol myVol, result, answer;
   size_t H=2;
   size_t W=3;
   size_t S=4;
@@ -59,7 +59,7 @@ int test_absVol(){
 }
 
 int test_addImgs(){
-  cimpl_imgf img1, img2, result, answer;
+  cimpl_img img1, img2, result, answer;
   size_t H=2;
   size_t W=3;
   int out;
@@ -84,7 +84,7 @@ int test_addImgs(){
 }
 
 int test_addVols(){
-  cimpl_volf vol1, vol2, result, answer;
+  cimpl_vol vol1, vol2, result, answer;
   size_t H=2;
   size_t W=3;
   size_t S=3;
@@ -110,7 +110,7 @@ int test_addVols(){
 }
 
 int test_addScalar2Img(){
-  cimpl_imgf myImg, result, answer;
+  cimpl_img myImg, result, answer;
   size_t M=2;
   size_t N=3;
   int out;
@@ -132,7 +132,7 @@ int test_addScalar2Img(){
 }
 
 int test_addScalar2Vol(){
-  cimpl_volf myVol, result, answer;
+  cimpl_vol myVol, result, answer;
   size_t H=2;
   size_t W=3;
   size_t S=4;
@@ -155,7 +155,7 @@ int test_addScalar2Vol(){
 }
 
 int test_divideImgs(){
-  cimpl_imgf img1, img2, result, answer;
+  cimpl_img img1, img2, result, answer;
   size_t M=2;
   size_t N=3;
   int out;
@@ -180,7 +180,7 @@ int test_divideImgs(){
 }
 
 int test_divideImgByScalar(){
-  cimpl_imgf myImg, result, answer;
+  cimpl_img myImg, result, answer;
   size_t M=2;
   size_t N=3;
   float scalar = 2;
@@ -203,7 +203,7 @@ int test_divideImgByScalar(){
 }
 
 int test_flipImgLR(){
-  cimpl_imgf myImg, result, answer;
+  cimpl_img myImg, result, answer;
   int out;
   myImg = cimpl_mallocImg(3, 3);
   result = cimpl_mallocImg(3, 3);
@@ -221,7 +221,7 @@ int test_flipImgLR(){
 }
 
 int test_flipImgUD(){
-  cimpl_imgf myImg, result, answer;
+  cimpl_img myImg, result, answer;
   int out;
   myImg = cimpl_mallocImg(3, 3);
   result = cimpl_mallocImg(3, 3);
@@ -239,7 +239,7 @@ int test_flipImgUD(){
 }
 
 int test_multiplyImgs(){
-  cimpl_imgf img1, img2, result, answer;
+  cimpl_img img1, img2, result, answer;
   size_t M=2;
   size_t N=3;
   int out;
@@ -264,7 +264,7 @@ int test_multiplyImgs(){
 }
 
 int test_multiplyImgByScalar(){
-  cimpl_imgf myImg, result, answer;
+  cimpl_img myImg, result, answer;
   size_t M=2;
   size_t N=3;
   float scalar = 1.8;
@@ -287,7 +287,7 @@ int test_multiplyImgByScalar(){
 }
 
 int test_rot90(){
-  cimpl_imgf myImg, result, answer;
+  cimpl_img myImg, result, answer;
   size_t M, N;
   int out;
   float answerValues[6] = {4, 2, 0, 5, 3, 1};
@@ -311,7 +311,7 @@ int test_rot90(){
 }
 
 int test_rot180(){
-  cimpl_imgf myImg, result, answer;
+  cimpl_img myImg, result, answer;
   size_t M, N;
   int out;
   M=2; N=3;
@@ -334,7 +334,7 @@ int test_rot180(){
 }
 
 int test_rot270(){
-  cimpl_imgf myImg, result, answer;
+  cimpl_img myImg, result, answer;
   size_t M, N;
   int out;
   float answerValues[6] = {1, 3, 5, 0, 2, 4};
@@ -358,7 +358,7 @@ int test_rot270(){
 }
 
 int test_sumImg(){
-  cimpl_imgf myImg;
+  cimpl_img myImg;
   float result, answer;
   size_t H=2;
   size_t W=3;
@@ -378,7 +378,7 @@ int test_sumImg(){
 }
 
 int test_sumVol(){
-  cimpl_volf myVol;
+  cimpl_vol myVol;
   float result, answer;
   size_t H=2;
   size_t W=3;
