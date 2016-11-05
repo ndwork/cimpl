@@ -15,14 +15,14 @@
 
 int test_absImg(){
   cimpl_imgf myImg, result, answer;
-  unsigned int H=2;
-  unsigned int W=3;
-  unsigned int out;
+  size_t H=2;
+  size_t W=3;
+  int out;
   myImg = cimpl_mallocImg(H,W);
   answer = cimpl_mallocImg(H,W);
   result = cimpl_mallocImg(H,W);
 
-  for( unsigned int i=0; i<H*W; ++i ){
+  for( size_t i=0; i<H*W; ++i ){
     myImg.data[i] = pow(-1,i) * i;
     answer.data[i] = i;
   }
@@ -37,15 +37,15 @@ int test_absImg(){
 
 int test_absVol(){
   cimpl_volf myVol, result, answer;
-  unsigned int H=2;
-  unsigned int W=3;
-  unsigned int S=4;
-  unsigned int out;
+  size_t H=2;
+  size_t W=3;
+  size_t S=4;
+  int out;
   myVol = cimpl_mallocVol(H,W,S);
   answer = cimpl_mallocVol(H,W,S);
   result = cimpl_mallocVol(H,W,S);
   
-  for( unsigned int i=0; i<H*W*S; ++i ){
+  for( size_t i=0; i<H*W*S; ++i ){
     myVol.data[i] = pow(-1,i) * i;
     answer.data[i] = i;
   }
@@ -60,15 +60,15 @@ int test_absVol(){
 
 int test_addImgs(){
   cimpl_imgf img1, img2, result, answer;
-  unsigned int H=2;
-  unsigned int W=3;
-  unsigned int out;
+  size_t H=2;
+  size_t W=3;
+  int out;
   img1 = cimpl_mallocImg(H,W);
   img2 = cimpl_mallocImg(H,W);
   answer = cimpl_mallocImg(H,W);
   result = cimpl_mallocImg(H,W);
 
-  for( unsigned int i=0; i<H*W; ++i ){
+  for( size_t i=0; i<H*W; ++i ){
     img1.data[i] = i;
     img2.data[i] = i;
     answer.data[i] = 2*i;
@@ -85,16 +85,16 @@ int test_addImgs(){
 
 int test_addVols(){
   cimpl_volf vol1, vol2, result, answer;
-  unsigned int H=2;
-  unsigned int W=3;
-  unsigned int S=3;
-  unsigned int out;
+  size_t H=2;
+  size_t W=3;
+  size_t S=3;
+  int out;
   vol1 = cimpl_mallocVol(H,W,S);
   vol2 = cimpl_mallocVol(H,W,S);
   answer = cimpl_mallocVol(H,W,S);
   result = cimpl_mallocVol(H,W,S);
   
-  for( unsigned int i=0; i<H*W*S; ++i ){
+  for( size_t i=0; i<H*W*S; ++i ){
     vol1.data[i] = i;
     vol2.data[i] = i;
     answer.data[i] = 2*i;
@@ -111,14 +111,14 @@ int test_addVols(){
 
 int test_addScalar2Img(){
   cimpl_imgf myImg, result, answer;
-  unsigned int M=2;
-  unsigned int N=3;
-  unsigned int out;
+  size_t M=2;
+  size_t N=3;
+  int out;
   myImg = cimpl_mallocImg(M, N);
   answer = cimpl_mallocImg(M, N);
   result = cimpl_mallocImg(M,N);
 
-  for( unsigned int i=0; i<M*N; ++i ){
+  for( size_t i=0; i<M*N; ++i ){
     myImg.data[i] = i;
     answer.data[i] = i + 8;
   }
@@ -133,15 +133,15 @@ int test_addScalar2Img(){
 
 int test_addScalar2Vol(){
   cimpl_volf myVol, result, answer;
-  unsigned int H=2;
-  unsigned int W=3;
-  unsigned int S=4;
-  unsigned int out;
+  size_t H=2;
+  size_t W=3;
+  size_t S=4;
+  int out;
   myVol = cimpl_mallocVol(H,W,S);
   result = cimpl_mallocVol(H,W,S);
   answer = cimpl_mallocVol(H,W,S);
 
-  for( unsigned int i=0; i<H*W*S; ++i ){
+  for( size_t i=0; i<H*W*S; ++i ){
     myVol.data[i] = i;
     answer.data[i] = i + 8;
   }
@@ -156,15 +156,15 @@ int test_addScalar2Vol(){
 
 int test_divideImgs(){
   cimpl_imgf img1, img2, result, answer;
-  unsigned int M=2;
-  unsigned int N=3;
-  unsigned int out;
+  size_t M=2;
+  size_t N=3;
+  int out;
   img1 = cimpl_mallocImg(M, N);
   img2 = cimpl_mallocImg(M, N);
   result = cimpl_mallocImg(M, N);
   answer = cimpl_mallocImg(M, N);
 
-  for( unsigned int i=1; i<=M*N; ++i ){
+  for( size_t i=1; i<=M*N; ++i ){
     img1.data[i-1] = 2*i;
     img2.data[i-1] = i;
     answer.data[i-1] = 2;
@@ -181,15 +181,15 @@ int test_divideImgs(){
 
 int test_divideImgByScalar(){
   cimpl_imgf myImg, result, answer;
-  unsigned int M=2;
-  unsigned int N=3;
+  size_t M=2;
+  size_t N=3;
   float scalar = 2;
-  unsigned int out;
+  int out;
   myImg = cimpl_mallocImg(M, N);
   result = cimpl_mallocImg(M, N);
   answer = cimpl_mallocImg(M, N);
   
-  for( unsigned int i=1; i<=M*N; ++i ){
+  for( size_t i=1; i<=M*N; ++i ){
     myImg.data[i-1] = scalar * i;
     answer.data[i-1] = i;
   }
@@ -204,7 +204,7 @@ int test_divideImgByScalar(){
 
 int test_flipImgLR(){
   cimpl_imgf myImg, result, answer;
-  unsigned int out;
+  int out;
   myImg = cimpl_mallocImg(3, 3);
   result = cimpl_mallocImg(3, 3);
   answer = cimpl_mallocImg(3, 3);
@@ -222,7 +222,7 @@ int test_flipImgLR(){
 
 int test_flipImgUD(){
   cimpl_imgf myImg, result, answer;
-  unsigned int out;
+  int out;
   myImg = cimpl_mallocImg(3, 3);
   result = cimpl_mallocImg(3, 3);
   answer = cimpl_mallocImg(3, 3);
@@ -240,15 +240,15 @@ int test_flipImgUD(){
 
 int test_multiplyImgs(){
   cimpl_imgf img1, img2, result, answer;
-  unsigned int M=2;
-  unsigned int N=3;
-  unsigned int out;
+  size_t M=2;
+  size_t N=3;
+  int out;
   img1 = cimpl_mallocImg(M, N);
   img2 = cimpl_mallocImg(M, N);
   result = cimpl_mallocImg(M, N);
   answer = cimpl_mallocImg(M, N);
   
-  for( unsigned int i=0; i<M*N; ++i ){
+  for( size_t i=0; i<M*N; ++i ){
     img1.data[i] = i;
     img2.data[i] = i+1;
     answer.data[i] = i*(i+1);
@@ -265,15 +265,15 @@ int test_multiplyImgs(){
 
 int test_multiplyImgByScalar(){
   cimpl_imgf myImg, result, answer;
-  unsigned int M=2;
-  unsigned int N=3;
+  size_t M=2;
+  size_t N=3;
   float scalar = 1.8;
-  unsigned int out;
+  int out;
   myImg = cimpl_mallocImg(M, N);
   result = cimpl_mallocImg(M, N);
   answer = cimpl_mallocImg(M, N);
 
-  for( unsigned int i=1; i<=M*N; ++i ){
+  for( size_t i=1; i<=M*N; ++i ){
     myImg.data[i-1] = i;
     answer.data[i-1] = scalar * i;
   }
@@ -288,7 +288,8 @@ int test_multiplyImgByScalar(){
 
 int test_rot90(){
   cimpl_imgf myImg, result, answer;
-  unsigned int M, N, out;
+  size_t M, N;
+  int out;
   float answerValues[6] = {4, 2, 0, 5, 3, 1};
   M=2; N=3;
 
@@ -296,7 +297,7 @@ int test_rot90(){
   result = cimpl_mallocImg(N,M);
   answer = cimpl_mallocImg(N,M);
   
-  for( unsigned int i=0; i<myImg.h*myImg.w; ++i ){
+  for( size_t i=0; i<myImg.h*myImg.w; ++i ){
     myImg.data[i] = i;
   }
   cimpl_rot90( myImg, &result );
@@ -311,14 +312,15 @@ int test_rot90(){
 
 int test_rot180(){
   cimpl_imgf myImg, result, answer;
-  unsigned int M, N, out;
+  size_t M, N;
+  int out;
   M=2; N=3;
 
   myImg = cimpl_mallocImg(M,N);
   result = cimpl_mallocImg(M,N);
   answer = cimpl_mallocImg(M,N);
   
-  for( unsigned int i=0; i<myImg.h*myImg.w; ++i ){
+  for( size_t i=0; i<myImg.h*myImg.w; ++i ){
     myImg.data[i] = i;
     answer.data[i] = myImg.h*myImg.w-i-1;
   }
@@ -333,7 +335,8 @@ int test_rot180(){
 
 int test_rot270(){
   cimpl_imgf myImg, result, answer;
-  unsigned int M, N, out;
+  size_t M, N;
+  int out;
   float answerValues[6] = {1, 3, 5, 0, 2, 4};
   M=2; N=3;
 
@@ -341,7 +344,7 @@ int test_rot270(){
   result = cimpl_mallocImg(N,M);
   answer = cimpl_mallocImg(N,M);
 
-  for( unsigned int i=0; i<myImg.h*myImg.w; ++i ){
+  for( size_t i=0; i<myImg.h*myImg.w; ++i ){
     myImg.data[i] = i;
   }
   cimpl_rot270( myImg, &result );
@@ -357,13 +360,13 @@ int test_rot270(){
 int test_sumImg(){
   cimpl_imgf myImg;
   float result, answer;
-  unsigned int H=2;
-  unsigned int W=3;
-  unsigned int out;
+  size_t H=2;
+  size_t W=3;
+  int out;
   myImg = cimpl_mallocImg(H,W);
 
   answer = 0;
-  for( unsigned int i=0; i<H*W; ++i ){
+  for( size_t i=0; i<H*W; ++i ){
     myImg.data[i] = (float) i/3;
     answer += (float) i/3;
   }
@@ -377,14 +380,14 @@ int test_sumImg(){
 int test_sumVol(){
   cimpl_volf myVol;
   float result, answer;
-  unsigned int H=2;
-  unsigned int W=3;
-  unsigned int S=3;
-  unsigned int out;
+  size_t H=2;
+  size_t W=3;
+  size_t S=3;
+  int out;
   myVol = cimpl_mallocVol(H, W, S);
 
   answer = 0;
-  for( unsigned int i=0; i<H*W*S; ++i ){
+  for( size_t i=0; i<H*W*S; ++i ){
     myVol.data[i] = (float) i/3;
     answer += (float) i/3;
   }
