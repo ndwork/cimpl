@@ -51,7 +51,9 @@ void cimpl_concatCmpImgsH( cimpl_cmpImgf const img1, cimpl_cmpImgf const img2, c
 void cimpl_concatCmpImgsW( cimpl_cmpImgf const img1, cimpl_cmpImgf const img2, cimpl_cmpImgf * const out );
 void cimpl_concatImgsH( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out );
 void cimpl_concatImgsW( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out );
+void cimpl_concatVolsH( cimpl_volf const vol1, cimpl_volf const vol2, cimpl_volf * const out );
 void cimpl_concatVolsS( cimpl_volf const vol1, cimpl_volf const vol2, cimpl_volf * const out );
+void cimpl_concatVolsW( cimpl_volf const vol1, cimpl_volf const vol2, cimpl_volf * const out );
 void cimpl_conjCmpImg( cimpl_cmpImgf const in, cimpl_cmpImgf * const out );
 void cimpl_cropImg( cimpl_imgf const in, cimpl_imgf * const out );
 void cimpl_cropVol( cimpl_volf const in, cimpl_volf * const out );

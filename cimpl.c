@@ -152,8 +152,8 @@ void cimpl_concatCmpImgsW( cimpl_cmpImgf const img1, cimpl_cmpImgf const img2, c
 }
 
 void cimpl_concatImgsH( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out ){
-  assert( img1.w == img2.w );
   assert( out->w == img1.w );
+  assert( out->w == img2.w );
   assert( out->h == img1.h + img2.h );
 
   for( size_t x=0; x<out->w; ++x ){
@@ -169,9 +169,29 @@ void cimpl_concatImgsW( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf
 
   size_t img1Size = img1.h*img1.w;
   size_t img2Size = img2.h*img2.w;
-  
+
   memcpy( out->data, img1.data, img1Size*sizeof(float) );
   memcpy( out->data + img1Size, img2.data, img2Size*sizeof(float) );
+}
+
+void cimpl_concatVolsH( cimpl_volf const vol1, cimpl_volf const vol2, cimpl_volf * const out ){
+  assert( out->w == vol1.w );
+  assert( out->s == vol1.s );
+  assert( out->w == vol2.w );
+  assert( out->s == vol2.s );
+  assert( out->h == vol1.h + vol2.h );
+
+  size_t sliceSize1 = vol1.h * vol1.w;
+  size_t sliceSize2 = vol2.h * vol2.w;
+  size_t sliceSizeOut = out->h * out->w;
+
+  for( size_t x=0; x<out->w; ++x ){
+    for( size_t s=0; s<out->s; ++s ){
+      memcpy( out->data + x*out->w + s*sliceSizeOut, vol1.data + x*vol1.w + s*sliceSize1,
+        vol1.h*sizeof(float) );
+      memcpy( out->data + x*out->w + s*sliceSizeOut + vol2.h, vol2.data + x*vol2.w + s*sliceSize2,
+        vol2.h*sizeof(float) );
+  } }
 }
 
 void cimpl_concatVolsS( cimpl_volf const vol1, cimpl_volf const vol2, cimpl_volf * const out ){
@@ -186,6 +206,23 @@ void cimpl_concatVolsS( cimpl_volf const vol1, cimpl_volf const vol2, cimpl_volf
   
   memcpy( out->data, vol1.data, sizeVol1*sizeof(float) );
   memcpy( out->data+sizeVol1, vol2.data, sizeVol2*sizeof(float) );
+}
+
+void cimpl_concatVolsW( cimpl_volf const vol1, cimpl_volf const vol2, cimpl_volf * const out ){
+  assert( out->h == vol1.h );
+  assert( out->s == vol1.s );
+  assert( out->h == vol2.h );
+  assert( out->s == vol2.s );
+  assert( out->w == vol1.w + vol2.w );
+
+  size_t sliceSize1 = vol1.h*vol1.w;
+  size_t sliceSize2 = vol2.h*vol2.w;
+
+  for( size_t s=0; s<out->h*out->w; ++s ){
+    memcpy( out->data+s*out->h*out->w, vol1.data+s*sliceSize1, sizeof(float)*sliceSize1 );
+    memcpy( out->data+s*out->h*out->w + sliceSize1*sizeof(float), vol2.data+s*sliceSize2,
+      sizeof(float)*sliceSize2 );
+  }
 }
 
 void cimpl_conjCmpImg( cimpl_cmpImgf const in, cimpl_cmpImgf * const out ){
