@@ -121,11 +121,71 @@ void cimpl_circShiftVol( cimpl_volf const in, int hShift, int vShift, int sShift
   } } }
 }
 
+void cimpl_concatImgsH( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out ){
+  assert( img1.w == img2.w );
+  assert( out->w == img1.w );
+  assert( out->h == img1.h + img2.h );
+
+  for( unsigned int x=0; x<out->w; ++x ){
+    for( unsigned int y=0; y<img1.h; ++y ){
+      out->data[y+x*out->w] = img1.data[y+x*img1.h];
+    }
+    for( unsigned int y=0; y<img2.h; ++y ){
+      out->data[img1.h+y+x*out->w] = img2.data[y+x*img2.h];
+  } }
+}
+
+void cimpl_concatImgsW( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out ){
+  assert( img1.h == img2.h );
+  assert( out->h == img1.h );
+  assert( out->w == img1.w + img2.w );
+
+  unsigned int img1Size=img1.h*img1.w;
+  
+  for( unsigned int i=0; i<img1Size; ++i )
+    out->data[i] = img1.data[i];
+  for( unsigned int i=0; i<img2.h*img2.w; ++i )
+    out->data[img1Size+i] = img2.data[i];
+}
+
 void cimpl_conjCmpImg( cimpl_cmpImgf const in, cimpl_cmpImgf * const out ){
   assert( out->h = in.h );
   assert( out->w = in.w );
   for( unsigned int i =0; i<in.h*in.w; ++i ){
     out->iData[i] = -in.iData[i];
+  }
+}
+
+void cimpl_concatCmpImgsH( cimpl_cmpImgf const img1, cimpl_cmpImgf const img2, cimpl_cmpImgf * const out ){
+  assert( img1.h == img2.h );
+  assert( out->h == img1.h );
+  assert( out->w == img1.w + img2.w );
+
+  for( unsigned int x=0; x<out->w; ++x ){
+    for( unsigned int y=0; y<img1.h; ++y ){
+      out->rData[y+x*out->w] = img1.rData[y+x*img1.h];
+      out->iData[y+x*out->w] = img1.iData[y+x*img1.h];
+    }
+    for( unsigned int y=0; y<img2.h; ++y ){
+      out->rData[img1.h+y+x*out->w] = img2.rData[y+x*img2.h];
+      out->iData[img1.h+y+x*out->w] = img2.iData[y+x*img2.h];
+  } }
+}
+
+void cimpl_concatCmpImgsW( cimpl_cmpImgf const img1, cimpl_cmpImgf const img2, cimpl_cmpImgf * const out ){
+  assert( img1.h == img2.h );
+  assert( out->h == img1.h );
+  assert( out->w == img1.w + img2.w );
+
+  unsigned int img1Size=img1.h*img1.w;
+
+  for( unsigned int i=0; i<img1Size; ++i ){
+    out->rData[i] = img1.rData[i];
+    out->iData[i] = img1.iData[i];
+  }
+  for( unsigned int i=0; i<img2.h*img2.w; ++i ){
+    out->rData[img1Size+i] = img2.rData[i];
+    out->iData[img1Size+i] = img2.iData[i];
   }
 }
 

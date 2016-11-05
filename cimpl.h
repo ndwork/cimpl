@@ -45,6 +45,10 @@ void cimpl_addScalar2Vol( float const scalar, cimpl_volf const in, cimpl_volf * 
 void cimpl_circShiftImg( cimpl_imgf const in, int hShift, int vShift, cimpl_imgf * const out );
 void cimpl_circShiftVol( cimpl_volf const in, int hShift, int vShift, int sShift,
   cimpl_volf * const out );
+void cimpl_concatCmpImgsH( cimpl_cmpImgf const img1, cimpl_cmpImgf const img2, cimpl_cmpImgf * const out );
+void cimpl_concatCmpImgsW( cimpl_cmpImgf const img1, cimpl_cmpImgf const img2, cimpl_cmpImgf * const out );
+void cimpl_concatImgsH( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out );
+void cimpl_concatImgsW( cimpl_imgf const img1, cimpl_imgf const img2, cimpl_imgf * const out );
 void cimpl_conjCmpImg( cimpl_cmpImgf const in, cimpl_cmpImgf * const out );
 void cimpl_cropImg( cimpl_imgf const in, cimpl_imgf * const out );
 void cimpl_cropVol( cimpl_volf const in, cimpl_volf * const out );
