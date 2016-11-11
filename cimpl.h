@@ -12,8 +12,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-  
+
 #include <stddef.h>
+
 
 typedef struct {
   size_t h;  // height
@@ -92,6 +93,8 @@ void cimpl_sliceY( cimpl_vol const in, size_t yIndx, cimpl_img * const out );
 void cimpl_sliceYX( cimpl_vol const in, size_t yIndx, size_t xIndx, float * const out );
 void cimpl_sliceYZ( cimpl_vol const in, size_t yIndx, size_t zIndx, float * const out );
 void cimpl_sliceZ( cimpl_vol const in, size_t zIndx, cimpl_img * const out );
+void cimpl_spaceConvImgTemplate( cimpl_img const img1, cimpl_img const t,
+  cimpl_img * const out );
 void cimpl_subImg( cimpl_img const in, size_t const h1, size_t const v1,
   cimpl_img * const out );
 void cimpl_subtractImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );

@@ -14,7 +14,6 @@
 #include "cimpl.h"
 
 
-
 void cimpl_absCmpImg( cimpl_cmpImg const in, cimpl_img * const out ){
   assert( out->h == in.h );
   assert( out->w == in.w );
@@ -231,6 +230,33 @@ void cimpl_conjCmpImg( cimpl_cmpImg const in, cimpl_cmpImg * const out ){
   for( size_t i =0; i<in.h*in.w; ++i ){
     out->iData[i] = -in.iData[i];
   }
+}
+
+void cimpl_spaceConvImgTemplate( cimpl_img const img1, cimpl_img const t, cimpl_img * const out ){
+  assert( out->h == img1.h );
+  assert( out->w == img1.w );
+  assert( t.h % 2 == 1 );
+  assert( t.w % 2 == 1 );
+
+  float tmp;
+  long hh = floorf( t.h / 2 );
+  long hw = floorf( t.w / 2 );
+
+  for( long x=0; x<out->w; ++x ){
+    for( long y=0; y<out->h; ++y ){
+      tmp = 0;
+
+      for( long tx=-hw; tx <= hw; ++tx ){
+        if( x+tx < 0 || x+tx > out->w ) continue;
+
+        for( long ty=-hh; ty <= hh; ++ty ){
+          if( y+ty < 0 || y+ty > out->h ) continue;
+
+          tmp += img1.data[(y+ty)+(x+tx)*img1.w] * t.data[(ty+hh)+(tx+hw)*t.w];
+      } }
+
+      out->data[y+x*out->w] = tmp;
+  } }
 }
 
 void cimpl_cropImg( cimpl_img const in, cimpl_img * const out ){
