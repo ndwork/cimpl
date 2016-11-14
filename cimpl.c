@@ -432,6 +432,36 @@ void cimpl_freeVol( cimpl_vol * const in ){
   in->data = NULL;
 }
 
+void cimpl_getImagImg( cimpl_cmpImg const in, cimpl_img * const out ){
+  assert( out->h == in.h );
+  assert( out->w == in.w );
+  for( size_t i=0; i<out->h*out->w; ++i )
+    in.data[i] = cimagf( out->data[i] );
+}
+
+void cimpl_getImagVol( cimpl_cmpVol const in, cimpl_vol * const out ){
+  assert( out->h == in.h );
+  assert( out->w == in.w );
+  assert( out->s == in.s );
+  for( size_t i=0; i<out->h*out->w*out->s; ++i )
+    in.data[i] = cimagf( out->data[i] );
+}
+
+void cimpl_getRealImg( cimpl_cmpImg const in, cimpl_img * const out ){
+  assert( out->h == in.h );
+  assert( out->w == in.w );
+  for( size_t i=0; i<out->h*out->w; ++i )
+    in.data[i] = crealf( out->data[i] );
+}
+
+void cimpl_getRealVol( cimpl_cmpVol const in, cimpl_vol * const out ){
+  assert( out->h == in.h );
+  assert( out->w == in.w );
+  assert( out->s == in.s );
+  for( size_t i=0; i<out->h*out->w*out->s; ++i )
+    in.data[i] = crealf( out->data[i] );
+}
+
 float cimpl_linInterp( size_t const N, float const * const x, float const * const y,
   float const outOfBounds, float const q ){
   // N is the number of values in the x and y arrays

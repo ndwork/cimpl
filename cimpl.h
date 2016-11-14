@@ -35,6 +35,13 @@ typedef struct {
   size_t s;  // number of slices
   float* data;  // column major ordering
 } cimpl_vol;
+  
+typedef struct {
+  size_t h;  // height
+  size_t w;  // width
+  size_t s;  // number of slices
+  float complex* data;
+} cimpl_cmpVol;
 
 void cimpl_absImg( cimpl_img const in, cimpl_img * const out );
 void cimpl_absCmpImg( cimpl_cmpImg const in, cimpl_img * const out );
@@ -68,6 +75,10 @@ void cimpl_flipImgUD( cimpl_img const in, cimpl_img * const out );
 void cimpl_freeCmpImg( cimpl_cmpImg * const in );
 void cimpl_freeImg( cimpl_img * const in );
 void cimpl_freeVol( cimpl_vol * const in );
+void cimpl_getImagImg( cimpl_cmpImg const in, cimpl_img * const out );
+void cimpl_getRealImg( cimpl_cmpImg const in, cimpl_img * const out );
+void cimpl_getImagVol( cimpl_cmpVol const in, cimpl_vol * const out );
+void cimpl_getRealVol( cimpl_cmpVol const in, cimpl_vol * const out );
 float cimpl_linInterp( size_t const N, float const * const x, float const * const y,
   float const outOfBounds, float const q );
 void cimpl_linInterps( size_t const N, float const * const x, float const * const y,
