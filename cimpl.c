@@ -82,6 +82,21 @@ void cimpl_addScalar2Vol( float const scalar, cimpl_vol const in, cimpl_vol * co
     out->data[i] = in.data[i] + scalar;
 }
 
+void cimpl_argCmpImg( cimpl_cmpImg const in, cimpl_img * const out ){
+  assert( out->h == in.h );
+  assert( out->w == in.w );
+  for( size_t i=0; i<in.h*in.w; ++i )
+    out->data[i] = cargf( in.data[i] );
+}
+
+void cimpl_argCmpVol( cimpl_cmpVol const in, cimpl_vol * const out ){
+  assert( out->h == in.h );
+  assert( out->w == in.w );
+  assert( out->s == in.s );
+  for( size_t i=0; i<in.h*in.w*in.s; ++i )
+    out->data[i] = cargf( in.data[i] );
+}
+
 void cimpl_circShiftImg( cimpl_img const in, int hShift, int vShift, cimpl_img * const out ){
   assert( out->w == in.w );
   assert( out->h == in.h );
