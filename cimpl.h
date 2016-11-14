@@ -43,6 +43,7 @@ typedef struct {
   float complex* data;
 } cimpl_cmpVol;
 
+
 void cimpl_absImg( cimpl_img const in, cimpl_img * const out );
 void cimpl_absCmpImg( cimpl_cmpImg const in, cimpl_img * const out );
 void cimpl_absCmpVol( cimpl_cmpVol const in, cimpl_vol * const out );
