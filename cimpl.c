@@ -195,18 +195,18 @@ void cimpl_concatVolsH( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * 
   assert( out->w == vol2.w );
   assert( out->s == vol2.s );
   assert( out->h == vol1.h + vol2.h );
-
+  
   size_t sliceSize1 = vol1.h * vol1.w;
   size_t sliceSize2 = vol2.h * vol2.w;
   size_t sliceSizeOut = out->h * out->w;
-
+  
   for( size_t x=0; x<out->w; ++x ){
     for( size_t s=0; s<out->s; ++s ){
       memcpy( out->data + x*out->w + s*sliceSizeOut, vol1.data + x*vol1.w + s*sliceSize1,
-        vol1.h*sizeof(float) );
+             vol1.h*sizeof(float) );
       memcpy( out->data + x*out->w + s*sliceSizeOut + vol2.h, vol2.data + x*vol2.w + s*sliceSize2,
-        vol2.h*sizeof(float) );
-  } }
+             vol2.h*sizeof(float) );
+    } }
 }
 
 void cimpl_concatVolsS( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
@@ -221,6 +221,57 @@ void cimpl_concatVolsS( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * 
   
   memcpy( out->data, vol1.data, sizeVol1*sizeof(float) );
   memcpy( out->data+sizeVol1, vol2.data, sizeVol2*sizeof(float) );
+}
+
+void cimpl_concatCmpVolsW( cimpl_cmpVol const vol1, cimpl_cmpVol const vol2, cimpl_cmpVol * const out ){
+  assert( out->h == vol1.h );
+  assert( out->s == vol1.s );
+  assert( out->h == vol2.h );
+  assert( out->s == vol2.s );
+  assert( out->w == vol1.w + vol2.w );
+  
+  size_t sliceSize1 = vol1.h*vol1.w;
+  size_t sliceSize2 = vol2.h*vol2.w;
+  
+  for( size_t s=0; s<out->h*out->w; ++s ){
+    memcpy( out->data+s*out->h*out->w, vol1.data+s*sliceSize1, sizeof(complex float)*sliceSize1 );
+    memcpy( out->data+s*out->h*out->w + sliceSize1*sizeof(complex float), vol2.data+s*sliceSize2,
+           sizeof(complex float)*sliceSize2 );
+  }
+}
+
+void cimpl_concatCmpVolsH( cimpl_cmpVol const vol1, cimpl_cmpVol const vol2, cimpl_cmpVol * const out ){
+  assert( out->w == vol1.w );
+  assert( out->s == vol1.s );
+  assert( out->w == vol2.w );
+  assert( out->s == vol2.s );
+  assert( out->h == vol1.h + vol2.h );
+
+  size_t sliceSize1 = vol1.h * vol1.w;
+  size_t sliceSize2 = vol2.h * vol2.w;
+  size_t sliceSizeOut = out->h * out->w;
+
+  for( size_t x=0; x<out->w; ++x ){
+    for( size_t s=0; s<out->s; ++s ){
+      memcpy( out->data + x*out->w + s*sliceSizeOut, vol1.data + x*vol1.w + s*sliceSize1,
+        vol1.h*sizeof(complex float) );
+      memcpy( out->data + x*out->w + s*sliceSizeOut + vol2.h, vol2.data + x*vol2.w + s*sliceSize2,
+        vol2.h*sizeof(complex float) );
+  } }
+}
+
+void cimpl_concatCmpVolsS( cimpl_cmpVol const vol1, cimpl_cmpVol const vol2, cimpl_cmpVol * const out ){
+  assert( vol1.h == vol2.h );
+  assert( vol1.w == vol2.w );
+  assert( out->h == vol1.h );
+  assert( out->w == vol1.w );
+  assert( out->s == vol1.s + vol2.s );
+
+  size_t sizeVol1 = vol1.h*vol1.s*vol1.w;
+  size_t sizeVol2 = vol2.h*vol2.s*vol2.w;
+
+  memcpy( out->data, vol1.data, sizeVol1*sizeof(complex float) );
+  memcpy( out->data+sizeVol1, vol2.data, sizeVol2*sizeof(complex float) );
 }
 
 void cimpl_concatVolsW( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
