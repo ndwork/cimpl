@@ -13,6 +13,7 @@
 extern "C" {
 #endif
 
+#include <complex.h>
 #include <stddef.h>
 
 
@@ -25,8 +26,7 @@ typedef struct {
 typedef struct {
   size_t h;  // height
   size_t w;  // width
-  float* rData;  // real
-  float* iData;  // imaginary
+  float complex* data;
 } cimpl_cmpImg;
 
 typedef struct {

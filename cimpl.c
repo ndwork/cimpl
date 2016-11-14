@@ -18,7 +18,7 @@ void cimpl_absCmpImg( cimpl_cmpImg const in, cimpl_img * const out ){
   assert( out->h == in.h );
   assert( out->w == in.w );
   for( size_t i=0; i<in.h*in.w; ++i )
-    out->data[i] = sqrtf( in.rData[i]*in.rData[i] + in.iData[i]*in.iData[i] );
+    out->data[i] = cabsf( in.data[i] );
 }
 
 void cimpl_absImg( cimpl_img const in, cimpl_img * const out ){
@@ -43,8 +43,7 @@ void cimpl_addCmpImgs( cimpl_cmpImg const img1, cimpl_cmpImg const img2,
   assert( out->h == img2.h );
   assert( out->w == img2.w );
   for( size_t i=0; i<img1.h*img1.w; ++i ){
-    out->rData[i] = img1.rData[i] + img2.rData[i];
-    out->iData[i] = img1.iData[i] + img2.iData[i];
+    out->data[i] = img1.data[i] + img2.data[i];
   }
 }
 
@@ -127,11 +126,8 @@ void cimpl_concatCmpImgsH( cimpl_cmpImg const img1, cimpl_cmpImg const img2, cim
   assert( out->w == img1.w + img2.w );
 
   for( size_t x=0; x<out->w; ++x ){
-    memcpy( out->rData+x*out->w, img1.rData+x*img1.h, img1.h*sizeof(float) );
-    memcpy( out->rData+x*out->w, img2.rData+x*img2.h, img2.h*sizeof(float) );
-    
-    memcpy( out->iData+x*out->w+img1.h, img1.iData+x*img2.h, img1.h*sizeof(float) );
-    memcpy( out->iData+x*out->w+img2.h, img2.iData+x*img2.h, img2.h*sizeof(float) );
+    memcpy( out->data+x*out->w, img1.data+x*img1.h, img1.h*sizeof(complex float) );
+    memcpy( out->data+x*out->w, img2.data+x*img2.h, img2.h*sizeof(complex float) );
   }
 }
 
@@ -143,11 +139,8 @@ void cimpl_concatCmpImgsW( cimpl_cmpImg const img1, cimpl_cmpImg const img2, cim
   size_t img1Size=img1.h*img1.w;
   size_t img2Size=img2.h*img2.w;
 
-  memcpy( out->rData, img1.rData, img1Size*sizeof(float) );
-  memcpy( out->rData, img2.rData, img2Size*sizeof(float) );
-  
-  memcpy( out->iData, img1.iData, img1Size*sizeof(float) );
-  memcpy( out->iData, img2.iData, img2Size*sizeof(float) );
+  memcpy( out->data, img1.data, img1Size*sizeof(complex float) );
+  memcpy( out->data, img2.data, img2Size*sizeof(complex float) );
 }
 
 void cimpl_concatImgsH( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out ){
@@ -227,9 +220,8 @@ void cimpl_concatVolsW( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * 
 void cimpl_conjCmpImg( cimpl_cmpImg const in, cimpl_cmpImg * const out ){
   assert( out->h = in.h );
   assert( out->w = in.w );
-  for( size_t i =0; i<in.h*in.w; ++i ){
-    out->iData[i] = -in.iData[i];
-  }
+  for( size_t i =0; i<in.h*in.w; ++i )
+    out->data[i] = conjf( in.data[i] );
 }
 
 void cimpl_spaceConvImgTemplate( cimpl_img const img1, cimpl_img const t, cimpl_img * const out ){
@@ -422,8 +414,7 @@ void cimpl_flipImgUD( cimpl_img const in, cimpl_img * const out ){
 void cimpl_freeCmpImg( cimpl_cmpImg * const in ){
   in->h = 0;
   in->w = 0;
-  free( in->rData );  in->rData = NULL;
-  free( in->iData );  in->iData = NULL;
+  free( in->data );  in->data = NULL;
 }
 
 void cimpl_freeImg( cimpl_img *in ){
@@ -528,8 +519,7 @@ cimpl_cmpImg cimpl_mallocCmpImg( size_t const h, size_t const w ){
   cimpl_cmpImg out;
   out.h = h;
   out.w = w;
-  out.rData = (float*) malloc( sizeof(float) * w * h );
-  out.iData = (float*) malloc( sizeof(float) * w * h );
+  out.data = (complex float*) malloc( sizeof(complex float) * w * h );
   return out;
 }
 
@@ -755,12 +745,9 @@ float cimpl_sumVol( cimpl_vol const * const in ){
 
 void cimpl_zeroCmpImg( cimpl_cmpImg * const img  ){
   // Sets all values of complex image to 0
-  assert( img->rData != NULL );
-  assert( img->iData != NULL );
+  assert( img->data != NULL );
   for( size_t i=0; i<img->h*img->w; ++i )
-    img->rData[i] = 0;
-  for( size_t i=0; i<img->h*img->w; ++i )
-    img->iData[i] = 0;
+    img->data[i] = 0;
 }
 
 void cimpl_zeroImg( cimpl_img * const img  ){
