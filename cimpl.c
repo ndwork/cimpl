@@ -21,6 +21,14 @@ void cimpl_absCmpImg( cimpl_cmpImg const in, cimpl_img * const out ){
     out->data[i] = cabsf( in.data[i] );
 }
 
+void cimpl_absCmpVol( cimpl_cmpVol const in, cimpl_vol * const out ){
+  assert( out->h == in.h );
+  assert( out->w == in.w );
+  assert( out->s == in.s );
+  for( size_t i=0; i<in.h*in.w*in.s; ++i )
+    out->data[i] = cabsf( in.data[i] );
+}
+
 void cimpl_absImg( cimpl_img const in, cimpl_img * const out ){
   assert( out->h == in.h );
   assert( out->w == in.w );

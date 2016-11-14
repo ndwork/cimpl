@@ -45,6 +45,7 @@ typedef struct {
 
 void cimpl_absImg( cimpl_img const in, cimpl_img * const out );
 void cimpl_absCmpImg( cimpl_cmpImg const in, cimpl_img * const out );
+void cimpl_absCmpVol( cimpl_cmpVol const in, cimpl_vol * const out );
 void cimpl_absVol( cimpl_vol const in, cimpl_vol * const out );
 void cimpl_addCmpImgs( cimpl_cmpImg const img1, cimpl_cmpImg const img2,
   cimpl_cmpImg * const out );
