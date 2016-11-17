@@ -13,6 +13,10 @@
 #include <string.h>
 #include "cimpl.h"
 
+#ifndef CIMPL_DONT_SIMD
+#include <xmmintrin.h>
+#endif
+
 
 void cimpl_absCmpImg( cimpl_cmpImg const in, cimpl_img * const out ){
   assert( out->h == in.h );
@@ -296,33 +300,6 @@ void cimpl_conjCmpImg( cimpl_cmpImg const in, cimpl_cmpImg * const out ){
   assert( out->w = in.w );
   for( size_t i =0; i<in.h*in.w; ++i )
     out->data[i] = conjf( in.data[i] );
-}
-
-void cimpl_spaceConvImgTemplate( cimpl_img const img1, cimpl_img const t, cimpl_img * const out ){
-  assert( out->h == img1.h );
-  assert( out->w == img1.w );
-  assert( t.h % 2 == 1 );
-  assert( t.w % 2 == 1 );
-
-  float tmp;
-  long hh = floorf( t.h / 2 );
-  long hw = floorf( t.w / 2 );
-
-  for( long x=0; x<out->w; ++x ){
-    for( long y=0; y<out->h; ++y ){
-      tmp = 0;
-
-      for( long tx=-hw; tx <= hw; ++tx ){
-        if( x+tx < 0 || x+tx > out->w ) continue;
-
-        for( long ty=-hh; ty <= hh; ++ty ){
-          if( y+ty < 0 || y+ty > out->h ) continue;
-
-          tmp += img1.data[(y+ty)+(x+tx)*img1.w] * t.data[(ty+hh)+(tx+hw)*t.w];
-      } }
-
-      out->data[y+x*out->w] = tmp;
-  } }
 }
 
 void cimpl_cropImg( cimpl_img const in, cimpl_img * const out ){
@@ -631,7 +608,15 @@ cimpl_img cimpl_mallocImg( size_t const h, size_t const w ){
   cimpl_img out;
   out.h = h;
   out.w = w;
+#ifndef CIMPL_DONT_SIMD
+#ifdef _MSC_VER
+  out.data = (float*) aligned_alloc( 16, sizeof(float) * w * h );
+#else
+  posix_memalign( (void**) &out.data, 16, sizeof(float) * w * h );
+#endif
+#else
   out.data = (float*) malloc( sizeof(float) * w * h );
+#endif
   return out;
 }
 
@@ -640,7 +625,15 @@ cimpl_vol cimpl_mallocVol( size_t const h, size_t const w, size_t s ){
   out.h = h;
   out.w = w;
   out.s = s;
+#ifndef CIMPL_DONT_SIMD
+#ifdef _MSC_VER
+  out.data = (float*) aligned_alloc( 16, sizeof(float) * w * h * s );
+#else
+  posix_memalign( (void**) &out.data, 16, sizeof(float) * w * h * s );
+#endif
+#else
   out.data = (float*) malloc( sizeof(float) * w * h * s );
+#endif
   return out;
 }
 
@@ -797,6 +790,74 @@ void cimpl_sliceZ( cimpl_vol const in, size_t zIndx, cimpl_img * const out ){
     for( size_t y=0; y<out->h; ++y ){
       out->data[y+x*out->h] = in.data[ y+x*out->h+zIndx*in.h*in.w ];
   } }
+}
+
+void cimpl_spaceConvImgTemplate( cimpl_img const img1, cimpl_img const t, cimpl_img * const out ){
+  assert( out->h == img1.h );
+  assert( out->w == img1.w );
+  assert( t.h % 2 == 1 );
+  assert( t.w % 2 == 1 );
+  
+  float tmp;
+  long hh = floorf( t.h / 2 );
+  long hw = floorf( t.w / 2 );
+  
+  for( long x=0; x<out->w; ++x ){
+    for( long y=0; y<out->h; ++y ){
+      tmp = 0;
+      
+      for( long tx=-hw; tx <= hw; ++tx ){
+        if( x+tx < 0 || x+tx > out->w ) continue;
+        
+        for( long ty=-hh; ty <= hh; ++ty ){
+          if( y+ty < 0 || y+ty > out->h ) continue;
+          
+          tmp += img1.data[(y+ty)+(x+tx)*img1.w] * t.data[(ty+hh)+(tx+hw)*t.w];
+        } }
+      
+      out->data[y+x*out->w] = tmp;
+    } }
+}
+
+void cimpl_sqrtImg( cimpl_img const in, cimpl_img * const out ){
+  assert( out->h == in.h );
+  assert( out->w == in.w );
+#ifndef CIMPL_DONT_SIMD
+  float* outData = out->data;
+  int simdIters = (int) ((in.h*in.w) / 4);
+  __m128* ptr = (__m128*)in.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++ptr, outData += 4)
+    _mm_store_ps(outData, _mm_sqrt_ps(*ptr));
+
+  for( int i=0; i < (in.h*in.w)-(4*simdIters); ++i )
+    out->data[i+4*simdIters] = sqrt( in.data[i+4*simdIters] );
+    
+#else
+  for( size_t i=0; i<in.h*in.w; ++i )
+    out->data[i] = sqrt( in.data[i] );
+#endif
+}
+
+void cimpl_sqrtVol( cimpl_vol const in, cimpl_vol * const out ){
+  assert( out->h == in.h );
+  assert( out->w == in.w );
+  assert( out->s == in.s );
+#ifndef CIMPL_DONT_SIMD
+  float* outData = out->data;
+  int simdIters = (int) ((in.h*in.w*in.s) / 4);
+  __m128* ptr = (__m128*)in.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++ptr, outData += 4)
+    _mm_store_ps(outData, _mm_sqrt_ps(*ptr));
+
+  for( int i=0; i < (in.h*in.w*in.s)-(4*simdIters); ++i )
+    out->data[i+4*simdIters] = sqrt( in.data[i+4*simdIters] );
+
+#else
+  for( size_t i=0; i<in.h*in.w*in.s; ++i )
+    out->data[i] = sqrt( in.data[i] );
+#endif
 }
 
 void cimpl_subImg( cimpl_img const in, size_t const h1, size_t const w1,

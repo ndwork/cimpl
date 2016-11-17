@@ -286,6 +286,51 @@ int test_multiplyImgByScalar(){
   return out;
 }
 
+int test_sqrtImg(){
+  cimpl_img myImg, result, answer;
+  size_t M=2;
+  size_t N=3;
+  int out;
+  myImg = cimpl_mallocImg(M, N);
+  result = cimpl_mallocImg(M, N);
+  answer = cimpl_mallocImg(M, N);
+  
+  for( size_t i=1; i<=M*N; ++i ){
+    myImg.data[i-1] = i;
+    answer.data[i-1] = sqrt(i);
+  }
+  cimpl_sqrtImg(myImg, &result);
+  out = cimpl_equalImgs(result, answer);
+
+  cimpl_freeImg(&myImg);
+  cimpl_freeImg(&result);
+  cimpl_freeImg(&answer);
+  return out;
+}
+
+int test_sqrtVol(){
+  cimpl_vol myVol, result, answer;
+  size_t M=2;
+  size_t N=3;
+  size_t S=4;
+  int out;
+  myVol = cimpl_mallocVol(M, N, S);
+  result = cimpl_mallocVol(M, N, S);
+  answer = cimpl_mallocVol(M, N, S);
+  
+  for( size_t i=1; i<=M*N*S; ++i ){
+    myVol.data[i-1] = i;
+    answer.data[i-1] = sqrt(i);
+  }
+  cimpl_sqrtVol(myVol, &result);
+  out = cimpl_equalVols(result, answer);
+
+  cimpl_freeVol(&myVol);
+  cimpl_freeVol(&result);
+  cimpl_freeVol(&answer);
+  return out;
+}
+
 int test_rot90(){
   cimpl_img myImg, result, answer;
   size_t M, N;
@@ -484,6 +529,18 @@ void cimpl_test(){
     printf("passed - cimpl_rot270\n");
   } else {
     printf("failed - cimpl_rot270\n");
+  }
+
+  if( test_sqrtImg() ){
+    printf("passed - cimpl_sqrtImg\n");
+  } else {
+    printf("failed - cimpl_sqrtImg\n");
+  }
+
+  if( test_sqrtVol() ){
+    printf("passed - cimpl_sqrtVol\n");
+  } else {
+    printf("failed - cimpl_sqrtVol\n");
   }
 
   if( test_sumImg() ){
