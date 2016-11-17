@@ -783,8 +783,44 @@ void cimpl_multiplyVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol *
 void cimpl_multiplyImgByScalar( cimpl_img const in, float const scalar, cimpl_img * const out ){
   assert( out->h == in.h );
   assert( out->w == in.w );
-  for( size_t i=0; i<in.w*in.h; ++i )
+
+#ifndef CIMPL_DONT_SIMD
+  float* outData = out->data;
+  int simdIters = (int) ((in.h*in.w) / 4);
+  const __m128 s = _mm_set1_ps(scalar);
+  __m128* inData = (__m128*) in.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++inData, outData += 4)
+    _mm_store_ps(outData, _mm_mul_ps(*inData, s));
+
+  for( int i=0; i < (in.h*in.w)-(4*simdIters); ++i )
+    out->data[i+4*simdIters] = in.data[i+4*simdIters] * scalar;
+#else
+  for( size_t i=0; i<in.h*in.w; ++i )
     out->data[i] = in.data[i] * scalar;
+#endif
+}
+
+void cimpl_multiplyVolByScalar( cimpl_vol const in, float const scalar, cimpl_vol * const out ){
+  assert( out->h == in.h );
+  assert( out->w == in.w );
+  assert( out->s == in.s );
+
+#ifndef CIMPL_DONT_SIMD
+  float* outData = out->data;
+  int simdIters = (int) ((in.h*in.w*in.s) / 4);
+  const __m128 s = _mm_set1_ps(scalar);
+  __m128* inData = (__m128*) in.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++inData, outData += 4)
+    _mm_store_ps(outData, _mm_div_ps(*inData, s));
+
+  for( int i=0; i < (in.h*in.w*in.s)-(4*simdIters); ++i )
+    out->data[i+4*simdIters] = in.data[i+4*simdIters] * scalar;
+#else
+  for( size_t i=0; i<in.h*in.w*in.s; ++i )
+    out->data[i] = in.data[i] * scalar;
+#endif
 }
 
 void cimpl_printImg( cimpl_img const in ){

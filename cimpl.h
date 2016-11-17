@@ -99,6 +99,7 @@ cimpl_vol cimpl_mallocVol( size_t const h, size_t const w, size_t s );
 void cimpl_multiplyImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );
 void cimpl_multiplyVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out );
 void cimpl_multiplyImgByScalar( cimpl_img const in, float const scalar, cimpl_img * const out );
+void cimpl_multiplyVolByScalar( cimpl_vol const in, float const scalar, cimpl_vol * const out );
 void cimpl_printImg( cimpl_img const in );
 void cimpl_reshapeCmpImg( size_t H, size_t W, cimpl_cmpImg * const img );
 void cimpl_reshapeImg( size_t H, size_t W, cimpl_img * const out );
