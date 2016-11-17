@@ -64,8 +64,22 @@ void cimpl_addImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * cons
   assert( out->h == img1.h );
   assert( out->w == img2.w );
   assert( out->h == img2.h );
+#ifndef CIMPL_DONT_SIMD
+  unsigned long simdIters = (img1.h*img2.w) / 16;
+
+  __m128* l = (__m128*) img1.data;
+  __m128* r = (__m128*) img2.data;
+  float* outData = out->data;
+
+  for( size_t i=0; i<simdIters; ++i, ++l, ++r, ++outData)
+    _mm_store_ps(outData, _mm_add_ps(*l, *r));
+
+  for( int i=0; i < (img1.h*img1.w)-(4*simdIters); ++i )
+    out->data[i+4*simdIters] = img1.data[i+4*simdIters] + img2.data[i+4*simdIters];
+#else
   for( int i=0; i<img1.h*img1.w; ++i)
     out->data[i] = img1.data[i] + img2.data[i];
+#endif
 }
 
 void cimpl_addVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
@@ -210,7 +224,7 @@ void cimpl_concatVolsH( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * 
              vol1.h*sizeof(float) );
       memcpy( out->data + x*out->w + s*sliceSizeOut + vol2.h, vol2.data + x*vol2.w + s*sliceSize2,
              vol2.h*sizeof(float) );
-    } }
+  } }
 }
 
 void cimpl_concatVolsS( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){

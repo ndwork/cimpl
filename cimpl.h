@@ -35,7 +35,7 @@ typedef struct {
   size_t s;  // number of slices
   float* data;  // column major ordering
 } cimpl_vol;
-  
+
 typedef struct {
   size_t h;  // height
   size_t w;  // width
