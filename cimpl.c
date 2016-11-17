@@ -110,16 +110,44 @@ void cimpl_addVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * cons
 void cimpl_addScalar2Img( float const scalar, cimpl_img const in, cimpl_img * const out ){
   assert( out->h == in.h );
   assert( out->w == in.w );
+  
+#ifndef CIMPL_DONT_SIMD
+  float* outData = out->data;
+  int simdIters = (int) ((in.h*in.w) / 4);
+  const __m128 s = _mm_set1_ps(scalar);
+  __m128* inData = (__m128*) in.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++inData, outData += 4)
+    _mm_store_ps(outData, _mm_add_ps(*inData, s));
+  
+  for( int i=0; i < (in.h*in.w)-(4*simdIters); ++i )
+    out->data[i+4*simdIters] = in.data[i+4*simdIters] + scalar;
+#else
   for( size_t i=0; i<in.w*in.h; ++i )
     out->data[i] = in.data[i] + scalar;
+#endif
 }
 
 void cimpl_addScalar2Vol( float const scalar, cimpl_vol const in, cimpl_vol * const out ){
   assert( out->h == in.h );
   assert( out->w == in.w );
   assert( out->s == in.s );
+  
+#ifndef CIMPL_DONT_SIMD
+  float* outData = out->data;
+  int simdIters = (int) ((in.h*in.w*in.s) / 4);
+  const __m128 s = _mm_set1_ps(scalar);
+  __m128* inData = (__m128*) in.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++inData, outData += 4)
+    _mm_store_ps(outData, _mm_add_ps(*inData, s));
+
+  for( int i=0; i < (in.h*in.w*in.s)-(4*simdIters); ++i )
+    out->data[i+4*simdIters] = in.data[i+4*simdIters] + scalar;
+#else
   for( size_t i=0; i<in.w*in.h*in.s; ++i )
     out->data[i] = in.data[i] + scalar;
+#endif
 }
 
 void cimpl_argCmpImg( cimpl_cmpImg const in, cimpl_img * const out ){
