@@ -73,6 +73,7 @@ void cimpl_conjCmpImg( cimpl_cmpImg const in, cimpl_cmpImg * const out );
 void cimpl_cropImg( cimpl_img const in, cimpl_img * const out );
 void cimpl_cropVol( cimpl_vol const in, cimpl_vol * const out );
 void cimpl_divideImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );
+void cimpl_divideVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out );
 void cimpl_divideImgByScalar( cimpl_img const in, float const scalar, cimpl_img * const out );
 float cimpl_dotImgs( cimpl_img const img1, cimpl_img const img2 );
 int cimpl_equalImgs( cimpl_img const img1, cimpl_img const img2 );
@@ -118,6 +119,7 @@ void cimpl_sqrtVol( cimpl_vol const in, cimpl_vol * const out );
 void cimpl_subImg( cimpl_img const in, size_t const h1, size_t const v1,
   cimpl_img * const out );
 void cimpl_subtractImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );
+void cimpl_subtractVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out );
 void cimpl_subtractImgFromScalar( cimpl_img const in, float const scalar, cimpl_img * const out );
 void cimpl_subtractScalarFromImg( cimpl_img const in, float const scalar, cimpl_img * const out );
 float cimpl_sumImg( cimpl_img const * const in );
