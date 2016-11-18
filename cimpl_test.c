@@ -60,8 +60,8 @@ int test_absVol(){
 
 int test_addImgs(){
   cimpl_img img1, img2, result, answer;
-  size_t H=2;
-  size_t W=3;
+  size_t H=22;
+  size_t W=33;
   int out;
   img1 = cimpl_mallocImg(H,W);
   img2 = cimpl_mallocImg(H,W);
@@ -83,36 +83,10 @@ int test_addImgs(){
   return out;
 }
 
-int test_addVols(){
-  cimpl_vol vol1, vol2, result, answer;
-  size_t H=2;
-  size_t W=3;
-  size_t S=3;
-  int out;
-  vol1 = cimpl_mallocVol(H,W,S);
-  vol2 = cimpl_mallocVol(H,W,S);
-  answer = cimpl_mallocVol(H,W,S);
-  result = cimpl_mallocVol(H,W,S);
-  
-  for( size_t i=0; i<H*W*S; ++i ){
-    vol1.data[i] = i;
-    vol2.data[i] = i;
-    answer.data[i] = 2*i;
-  }
-  cimpl_addVols( vol1, vol2, &result );
-  out = cimpl_equalVols(result, answer);
-  
-  cimpl_freeVol(&vol1);
-  cimpl_freeVol(&vol2);
-  cimpl_freeVol(&answer);
-  cimpl_freeVol(&result);
-  return out;
-}
-
 int test_addScalar2Img(){
   cimpl_img myImg, result, answer;
-  size_t M=2;
-  size_t N=3;
+  size_t M=22;
+  size_t N=33;
   int out;
   myImg = cimpl_mallocImg(M, N);
   answer = cimpl_mallocImg(M, N);
@@ -149,6 +123,32 @@ int test_addScalar2Vol(){
   out = cimpl_equalVols(result, answer);
 
   cimpl_freeVol(&myVol);
+  cimpl_freeVol(&answer);
+  cimpl_freeVol(&result);
+  return out;
+}
+
+int test_addVols(){
+  cimpl_vol vol1, vol2, result, answer;
+  size_t H=22;
+  size_t W=33;
+  size_t S=33;
+  int out;
+  vol1 = cimpl_mallocVol(H,W,S);
+  vol2 = cimpl_mallocVol(H,W,S);
+  answer = cimpl_mallocVol(H,W,S);
+  result = cimpl_mallocVol(H,W,S);
+  
+  for( size_t i=0; i<H*W*S; ++i ){
+    vol1.data[i] = i;
+    vol2.data[i] = i;
+    answer.data[i] = 2*i;
+  }
+  cimpl_addVols( vol1, vol2, &result );
+  out = cimpl_equalVols(result, answer);
+  
+  cimpl_freeVol(&vol1);
+  cimpl_freeVol(&vol2);
   cimpl_freeVol(&answer);
   cimpl_freeVol(&result);
   return out;
@@ -240,8 +240,8 @@ int test_flipImgUD(){
 
 int test_multiplyImgs(){
   cimpl_img img1, img2, result, answer;
-  size_t M=2;
-  size_t N=3;
+  size_t M=22;
+  size_t N=33;
   int out;
   img1 = cimpl_mallocImg(M, N);
   img2 = cimpl_mallocImg(M, N);
