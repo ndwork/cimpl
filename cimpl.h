@@ -56,6 +56,8 @@ void cimpl_addScalar2Img( float const scalar, cimpl_img const in, cimpl_img * co
 void cimpl_addScalar2Vol( float const scalar, cimpl_vol const in, cimpl_vol * const out );
 void cimpl_argCmpImg( cimpl_cmpImg const in, cimpl_img * const out );
 void cimpl_argCmpVol( cimpl_cmpVol const in, cimpl_vol * const out );
+void cimpl_ceilImg( cimpl_img const img, cimpl_img * const out );
+void cimpl_ceilVol( cimpl_vol const vol, cimpl_vol * const out );
 void cimpl_circShiftImg( cimpl_img const in, int hShift, int vShift, cimpl_img * const out );
 void cimpl_circShiftVol( cimpl_vol const in, int hShift, int vShift, int sShift,
   cimpl_vol * const out );
@@ -80,6 +82,8 @@ int cimpl_equalImgs( cimpl_img const img1, cimpl_img const img2 );
 int cimpl_equalVols( cimpl_vol const vol1, cimpl_vol const vol2 );
 void cimpl_flipImgLR( cimpl_img const in, cimpl_img * const out );
 void cimpl_flipImgUD( cimpl_img const in, cimpl_img * const out );
+void cimpl_floorImg( cimpl_img const img, cimpl_img * const out );
+void cimpl_floorVol( cimpl_vol const vol, cimpl_vol * const out );
 void cimpl_freeCmpImg( cimpl_cmpImg * const in );
 void cimpl_freeImg( cimpl_img * const in );
 void cimpl_freeVol( cimpl_vol * const in );
@@ -108,6 +112,8 @@ void cimpl_reshapeVol( size_t H, size_t W, size_t S, cimpl_vol * const out );
 void cimpl_rot90( cimpl_img const in, cimpl_img * const out );
 void cimpl_rot180( cimpl_img const in, cimpl_img * const out );
 void cimpl_rot270( cimpl_img const in, cimpl_img * const out );
+void cimpl_roundImg( cimpl_img const img, cimpl_img * const out );
+void cimpl_roundVol( cimpl_vol const vol, cimpl_vol * const out );
 void cimpl_sliceX( cimpl_vol const in, size_t xIndx, cimpl_img * const out );
 void cimpl_sliceXZ( cimpl_vol const in, size_t xIndx, size_t zIndx, float * const out );
 void cimpl_sliceY( cimpl_vol const in, size_t yIndx, cimpl_img * const out );
