@@ -20,6 +20,23 @@
 #include <stdlib.h>
 
 
+//------  PRE FFT  ------
+
+void cimpl_prefftCmpImg( cimpl_cmpImg const in, cimpl_cmpImg const fftOut, void* out ){
+  fftwf_plan* fftPlan = (fftwf_plan*) malloc( sizeof(fftwf_plan*) );
+  *fftPlan = fftwf_plan_dft_2d( (int) in.h, (int) in.w, (fftwf_complex*) in.data,
+                               (fftwf_complex*) fftOut.data, FFTW_FORWARD, FFTW_MEASURE );
+  out = fftPlan;
+}
+
+void cimpl_prefftCmpVol( cimpl_cmpVol const fftIn, cimpl_cmpVol const fftOut, void* out ){
+  fftwf_plan* fftPlan;
+  *fftPlan = fftwf_plan_dft_3d( (int) fftIn.h, (int) fftIn.w, (int) fftIn.s,
+                               (fftwf_complex*) fftIn.data, (fftwf_complex*) fftOut.data,
+                               FFTW_FORWARD, FFTW_MEASURE );
+  out = fftPlan;
+}
+
 void cimpl_prefftImg( cimpl_img const in, cimpl_cmpImg const fftOut, void* out ){
   fftwf_plan* fftPlan = malloc( sizeof(fftwf_plan*) );
   *fftPlan = fftwf_plan_dft_r2c_2d( (int) in.h, (int) in.w, in.data,
@@ -27,21 +44,24 @@ void cimpl_prefftImg( cimpl_img const in, cimpl_cmpImg const fftOut, void* out )
   out = fftPlan;
 }
 
-void cimpl_prefftCmpImg( cimpl_cmpImg const in, cimpl_cmpImg const fftOut, void* out ){
+void cimpl_preifftCmpImg( cimpl_cmpImg const in, cimpl_cmpImg const fftOut, void* out ){
   fftwf_plan* fftPlan = (fftwf_plan*) malloc( sizeof(fftwf_plan*) );
   *fftPlan = fftwf_plan_dft_2d( (int) in.h, (int) in.w, (fftwf_complex*) in.data,
-    (fftwf_complex*) fftOut.data, FFTW_FORWARD, FFTW_MEASURE );
+                               (fftwf_complex*) fftOut.data, FFTW_BACKWARD, FFTW_MEASURE );
   out = fftPlan;
 }
 
-void cimpl_prefftCmpVol( cimpl_cmpVol const fftIn, cimpl_cmpVol const fftOut, void* out ){
+void cimpl_preifftCmpVol( cimpl_cmpVol const fftIn, cimpl_cmpVol const fftOut, void* out ){
   fftwf_plan* fftPlan;
   *fftPlan = fftwf_plan_dft_3d( (int) fftIn.h, (int) fftIn.w, (int) fftIn.s,
-    (fftwf_complex*) fftIn.data, (fftwf_complex*) fftOut.data,
-    FFTW_FORWARD, FFTW_MEASURE );
+                               (fftwf_complex*) fftIn.data, (fftwf_complex*) fftOut.data,
+                               FFTW_BACKWARD, FFTW_MEASURE );
   out = fftPlan;
 }
 
+
+
+//------  FFT  ------
 
 void cimpl_fftCmpImg( void* in ){
   fftwf_plan* tmp = in;
@@ -58,6 +78,25 @@ void cimpl_fftImg( void* in ){
   fftwf_execute( *tmp );
 }
 
+void cimpl_ifftCmpImg( void* in ){
+  fftwf_plan* tmp = in;
+  fftwf_execute( *tmp );
+}
+
+void cimpl_ifftCmpVol( void* in ){
+  fftwf_plan* tmp = in;
+  fftwf_execute( *tmp );
+}
+
+void cimpl_ifftImg( void* in ){
+  fftwf_plan* tmp = in;
+  fftwf_execute( *tmp );
+}
+
+
+
+
+//------  POST FFT  ------
 
 void cimpl_postfftCmpImg( void* in ){
   fftwf_plan* tmp = in;
@@ -72,6 +111,24 @@ void cimpl_postfftCmpVol( void* in ){
 }
 
 void cimpl_postfftImg( void* in ){
+  fftwf_plan* tmp = in;
+  fftwf_destroy_plan( *tmp );
+  free( tmp );
+}
+
+void cimpl_postifftCmpImg( void* in ){
+  fftwf_plan* tmp = in;
+  fftwf_destroy_plan( *tmp );
+  free( tmp );
+}
+
+void cimpl_postifftCmpVol( void* in ){
+  fftwf_plan* tmp = in;
+  fftwf_destroy_plan( *tmp );
+  free( tmp );
+}
+
+void cimpl_postifftImg( void* in ){
   fftwf_plan* tmp = in;
   fftwf_destroy_plan( *tmp );
   free( tmp );
