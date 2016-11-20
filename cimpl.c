@@ -27,41 +27,33 @@
 
 
 void cimpl_absCmpImg( cimpl_cmpImg const in, cimpl_img * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
+  assert( out->h == in.h );  assert( out->w == in.w );
   for( size_t i=0; i<in.h*in.w; ++i )
     out->data[i] = cabsf( in.data[i] );
 }
 
 void cimpl_absCmpVol( cimpl_cmpVol const in, cimpl_vol * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
-  assert( out->s == in.s );
+  assert( out->h == in.h );  assert( out->w == in.w );  assert( out->s == in.s );
   for( size_t i=0; i<in.h*in.w*in.s; ++i )
     out->data[i] = cabsf( in.data[i] );
 }
 
 void cimpl_absImg( cimpl_img const in, cimpl_img * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
+  assert( out->h == in.h );  assert( out->w == in.w );
   for( int i=0; i<in.h*in.w; ++i )
     out->data[i] = fabsf(in.data[i]);
 }
 
 void cimpl_absVol( cimpl_vol const in, cimpl_vol * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
-  assert( out->s == in.s );
+  assert( out->h == in.h );  assert( out->w == in.w );  assert( out->s == in.s );
   for( int i=0; i<in.h*in.w*in.s; ++i )
     out->data[i] = fabsf(in.data[i]);
 }
 
 void cimpl_addCmpImgs( cimpl_cmpImg const img1, cimpl_cmpImg const img2,
                       cimpl_cmpImg * const out ){
-  assert( out->h == img1.h );
-  assert( out->w == img1.w );
-  assert( out->h == img2.h );
-  assert( out->w == img2.w );
+  assert( out->h == img1.h );  assert( out->w == img1.w );
+  assert( out->h == img2.h );  assert( out->w == img2.w );
 #ifndef CIMPL_DONT_SIMD
   size_t i;
   unsigned long simdIters = (img1.h*img1.w) / 2;
@@ -82,10 +74,8 @@ void cimpl_addCmpImgs( cimpl_cmpImg const img1, cimpl_cmpImg const img2,
 }
 
 void cimpl_addImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out ){
-  assert( out->w == img1.w );
-  assert( out->h == img1.h );
-  assert( out->w == img2.w );
-  assert( out->h == img2.h );
+  assert( out->w == img1.w );  assert( out->h == img1.h );
+  assert( out->w == img2.w );  assert( out->h == img2.h );
 #ifndef CIMPL_DONT_SIMD
   size_t i;
 
@@ -125,12 +115,8 @@ void cimpl_addImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * cons
 }
 
 void cimpl_addVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
-  assert( out->w == vol1.w );
-  assert( out->h == vol1.h );
-  assert( out->s == vol1.s );
-  assert( out->w == vol2.w );
-  assert( out->h == vol2.h );
-  assert( out->s == vol2.s );
+  assert( out->w == vol1.w );  assert( out->h == vol1.h );  assert( out->s == vol1.s );
+  assert( out->w == vol2.w );  assert( out->h == vol2.h );  assert( out->s == vol2.s );
 #ifndef CIMPL_DONT_SIMD
   size_t i;
   float* outData = out->data;
@@ -170,8 +156,7 @@ void cimpl_addVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * cons
 }
 
 void cimpl_addScalar2Img( float const scalar, cimpl_img const in, cimpl_img * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
+  assert( out->h == in.h );  assert( out->w == in.w );
 
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
@@ -209,9 +194,7 @@ void cimpl_addScalar2Img( float const scalar, cimpl_img const in, cimpl_img * co
 }
 
 void cimpl_addScalar2Vol( float const scalar, cimpl_vol const in, cimpl_vol * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
-  assert( out->s == in.s );
+  assert( out->h == in.h );  assert( out->w == in.w );  assert( out->s == in.s );
   
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
@@ -249,23 +232,19 @@ void cimpl_addScalar2Vol( float const scalar, cimpl_vol const in, cimpl_vol * co
 }
 
 void cimpl_argCmpImg( cimpl_cmpImg const in, cimpl_img * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
+  assert( out->h == in.h );  assert( out->w == in.w );
   for( size_t i=0; i<in.h*in.w; ++i )
     out->data[i] = cargf( in.data[i] );
 }
 
 void cimpl_argCmpVol( cimpl_cmpVol const in, cimpl_vol * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
-  assert( out->s == in.s );
+  assert( out->h == in.h );  assert( out->w == in.w );  assert( out->s == in.s );
   for( size_t i=0; i<in.h*in.w*in.s; ++i )
     out->data[i] = cargf( in.data[i] );
 }
 
 void cimpl_ceilImg( cimpl_img const img, cimpl_img * const out ){
-  assert( out->h == img.h );
-  assert( out->w == img.w );
+  assert( out->h == img.h );  assert( out->w == img.w );
 #if !defined(CIMPL_DONT_SSE4PT1) || !defined(CIMPL_DONT_SIMD)
   float* outData = out->data;
   
@@ -302,9 +281,7 @@ void cimpl_ceilImg( cimpl_img const img, cimpl_img * const out ){
 }
 
 void cimpl_ceilVol( cimpl_vol const vol, cimpl_vol * const out ){
-  assert( out->h == vol.h );
-  assert( out->w == vol.w );
-  assert( out->s == vol.s );
+  assert( out->h == vol.h );  assert( out->w == vol.w );  assert( out->s == vol.s );
 #if !defined(CIMPL_DONT_SSE4PT1) || !defined(CIMPL_DONT_SIMD)
   float* outData = out->data;
   
@@ -342,8 +319,7 @@ void cimpl_ceilVol( cimpl_vol const vol, cimpl_vol * const out ){
 }
 
 void cimpl_circShiftImg( cimpl_img const in, int hShift, int vShift, cimpl_img * const out ){
-  assert( out->w == in.w );
-  assert( out->h == in.h );
+  assert( out->w == in.w );  assert( out->h == in.h );
   assert( out->data != in.data );
   int inX, inY;
   
@@ -360,9 +336,7 @@ void cimpl_circShiftImg( cimpl_img const in, int hShift, int vShift, cimpl_img *
 
 void cimpl_circShiftVol( cimpl_vol const in, int hShift, int vShift, int sShift,
   cimpl_vol * const out ){
-  assert( out->w == in.w );
-  assert( out->h == in.h );
-  assert( out->s == in.s );
+  assert( out->w == in.w );  assert( out->h == in.h );  assert( out->s == in.s );
   assert( out->data != in.data );
   int inX, inY, inZ;
   for( int x=0; x<in.w; ++x ){
@@ -380,8 +354,7 @@ void cimpl_circShiftVol( cimpl_vol const in, int hShift, int vShift, int sShift,
 }
 
 void cimpl_concatCmpImgsH( cimpl_cmpImg const img1, cimpl_cmpImg const img2, cimpl_cmpImg * const out ){
-  assert( img1.h == img2.h );
-  assert( out->h == img1.h );
+  assert( img1.h == img2.h );  assert( out->h == img1.h );
   assert( out->w == img1.w + img2.w );
 
   for( size_t x=0; x<out->w; ++x ){
@@ -391,8 +364,7 @@ void cimpl_concatCmpImgsH( cimpl_cmpImg const img1, cimpl_cmpImg const img2, cim
 }
 
 void cimpl_concatCmpImgsW( cimpl_cmpImg const img1, cimpl_cmpImg const img2, cimpl_cmpImg * const out ){
-  assert( img1.h == img2.h );
-  assert( out->h == img1.h );
+  assert( img1.h == img2.h );  assert( out->h == img1.h );
   assert( out->w == img1.w + img2.w );
 
   size_t img1Size=img1.h*img1.w;
@@ -403,8 +375,7 @@ void cimpl_concatCmpImgsW( cimpl_cmpImg const img1, cimpl_cmpImg const img2, cim
 }
 
 void cimpl_concatImgsH( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out ){
-  assert( out->w == img1.w );
-  assert( out->w == img2.w );
+  assert( out->w == img1.w );  assert( out->w == img2.w );
   assert( out->h == img1.h + img2.h );
 
   for( size_t x=0; x<out->w; ++x ){
@@ -414,8 +385,7 @@ void cimpl_concatImgsH( cimpl_img const img1, cimpl_img const img2, cimpl_img * 
 }
 
 void cimpl_concatImgsW( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out ){
-  assert( img1.h == img2.h );
-  assert( out->h == img1.h );
+  assert( img1.h == img2.h );  assert( out->h == img1.h );
   assert( out->w == img1.w + img2.w );
 
   size_t img1Size = img1.h*img1.w;
@@ -426,10 +396,8 @@ void cimpl_concatImgsW( cimpl_img const img1, cimpl_img const img2, cimpl_img * 
 }
 
 void cimpl_concatVolsH( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
-  assert( out->w == vol1.w );
-  assert( out->s == vol1.s );
-  assert( out->w == vol2.w );
-  assert( out->s == vol2.s );
+  assert( out->w == vol1.w );  assert( out->s == vol1.s );
+  assert( out->w == vol2.w );  assert( out->s == vol2.s );
   assert( out->h == vol1.h + vol2.h );
   
   size_t sliceSize1 = vol1.h * vol1.w;
@@ -446,10 +414,8 @@ void cimpl_concatVolsH( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * 
 }
 
 void cimpl_concatVolsS( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
-  assert( vol1.h == vol2.h );
-  assert( vol1.w == vol2.w );
-  assert( out->h == vol1.h );
-  assert( out->w == vol1.w );
+  assert( vol1.h == vol2.h );  assert( vol1.w == vol2.w );
+  assert( out->h == vol1.h );  assert( out->w == vol1.w );
   assert( out->s == vol1.s + vol2.s );
   
   size_t sizeVol1 = vol1.h*vol1.s*vol1.w;
@@ -460,10 +426,8 @@ void cimpl_concatVolsS( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * 
 }
 
 void cimpl_concatCmpVolsW( cimpl_cmpVol const vol1, cimpl_cmpVol const vol2, cimpl_cmpVol * const out ){
-  assert( out->h == vol1.h );
-  assert( out->s == vol1.s );
-  assert( out->h == vol2.h );
-  assert( out->s == vol2.s );
+  assert( out->h == vol1.h );  assert( out->s == vol1.s );
+  assert( out->h == vol2.h );  assert( out->s == vol2.s );
   assert( out->w == vol1.w + vol2.w );
   
   size_t sliceSize1 = vol1.h*vol1.w;
@@ -477,10 +441,8 @@ void cimpl_concatCmpVolsW( cimpl_cmpVol const vol1, cimpl_cmpVol const vol2, cim
 }
 
 void cimpl_concatCmpVolsH( cimpl_cmpVol const vol1, cimpl_cmpVol const vol2, cimpl_cmpVol * const out ){
-  assert( out->w == vol1.w );
-  assert( out->s == vol1.s );
-  assert( out->w == vol2.w );
-  assert( out->s == vol2.s );
+  assert( out->w == vol1.w );  assert( out->s == vol1.s );
+  assert( out->w == vol2.w );  assert( out->s == vol2.s );
   assert( out->h == vol1.h + vol2.h );
 
   size_t sliceSize1 = vol1.h * vol1.w;
@@ -497,10 +459,8 @@ void cimpl_concatCmpVolsH( cimpl_cmpVol const vol1, cimpl_cmpVol const vol2, cim
 }
 
 void cimpl_concatCmpVolsS( cimpl_cmpVol const vol1, cimpl_cmpVol const vol2, cimpl_cmpVol * const out ){
-  assert( vol1.h == vol2.h );
-  assert( vol1.w == vol2.w );
-  assert( out->h == vol1.h );
-  assert( out->w == vol1.w );
+  assert( out->h == vol1.h );  assert( out->w == vol1.w );
+  assert( out->h == vol2.h );  assert( out->w == vol2.w );
   assert( out->s == vol1.s + vol2.s );
 
   size_t sizeVol1 = vol1.h*vol1.s*vol1.w;
@@ -511,10 +471,8 @@ void cimpl_concatCmpVolsS( cimpl_cmpVol const vol1, cimpl_cmpVol const vol2, cim
 }
 
 void cimpl_concatVolsW( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
-  assert( out->h == vol1.h );
-  assert( out->s == vol1.s );
-  assert( out->h == vol2.h );
-  assert( out->s == vol2.s );
+  assert( out->h == vol1.h );  assert( out->s == vol1.s );
+  assert( out->h == vol2.h );  assert( out->s == vol2.s );
   assert( out->w == vol1.w + vol2.w );
 
   size_t sliceSize1 = vol1.h*vol1.w;
@@ -528,16 +486,14 @@ void cimpl_concatVolsW( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * 
 }
 
 void cimpl_conjCmpImg( cimpl_cmpImg const in, cimpl_cmpImg * const out ){
-  assert( out->h = in.h );
-  assert( out->w = in.w );
+  assert( out->h = in.h );  assert( out->w = in.w );
   for( size_t i =0; i<in.h*in.w; ++i )
     out->data[i] = conjf( in.data[i] );
 }
 
 void cimpl_cropImg( cimpl_img const in, cimpl_img * const out ){
   // Crops data to size of out
-  assert( out->h <= in.h );
-  assert( out->w <= in.w );
+  assert( out->h <= in.h );  assert( out->w <= in.w );
   size_t halfH, minH;
   size_t halfW, minW;
   size_t colOffset, minColOffset;
@@ -571,9 +527,7 @@ void cimpl_cropImg( cimpl_img const in, cimpl_img * const out ){
 
 void cimpl_cropVol( cimpl_vol const in, cimpl_vol * const out ){
   // Crops data to size of out
-  assert( out->w <= in.w );
-  assert( out->h <= in.h );
-  assert( out->s <= in.s );
+  assert( out->w <= in.w );  assert( out->h <= in.h );  assert( out->s <= in.s );
   size_t halfH, minH;
   size_t halfW, minW;
   size_t halfS, minS;
@@ -621,10 +575,8 @@ void cimpl_cropVol( cimpl_vol const in, cimpl_vol * const out ){
 }
 
 void cimpl_divideImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out ){
-  assert( out->w == img1.w );
-  assert( out->h == img1.h );
-  assert( out->w == img2.w );
-  assert( out->h == img2.h );
+  assert( out->w == img1.w );  assert( out->h == img1.h );
+  assert( out->w == img2.w );  assert( out->h == img2.h );
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
 
@@ -663,12 +615,8 @@ void cimpl_divideImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * c
 }
 
 void cimpl_divideVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
-  assert( out->h == vol1.h );
-  assert( out->w == vol1.w );
-  assert( out->s == vol1.s );
-  assert( out->h == vol2.h );
-  assert( out->w == vol2.w );
-  assert( out->s == vol2.s );
+  assert( out->h == vol1.h );  assert( out->w == vol1.w );  assert( out->s == vol1.s );
+  assert( out->h == vol2.h );  assert( out->w == vol2.w );  assert( out->s == vol2.s );
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
 
@@ -707,15 +655,13 @@ void cimpl_divideVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * c
 }
 
 void cimpl_divideImgByScalar( cimpl_img const in, float const scalar, cimpl_img * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
+  assert( out->h == in.h );  assert( out->w == in.w );
   for( size_t i=0; i<in.w*in.h; ++i )
     out->data[i] = in.data[i] / scalar;
 }
 
 float cimpl_dotImgs( cimpl_img const img1, cimpl_img const img2 ){
-  assert( img1.w == img2.w );
-  assert( img1.h == img2.h );
+  assert( img1.w == img2.w );  assert( img1.h == img2.h );
   float out = 0;
   for( int i=0; i<img1.h*img1.w; ++i )
     out += img1.data[i] * img2.data[i];
@@ -751,8 +697,7 @@ int cimpl_equalVols( cimpl_vol const vol1, cimpl_vol const vol2 ){
 
 void cimpl_flipImgLR( cimpl_img const in, cimpl_img * const out ){
   // Flip image left/right
-  assert( out->h == in.h );
-  assert( out->w == in.w );
+  assert( out->h == in.h );  assert( out->w == in.w );
   assert( out->data != in.data );
   for( int x=0; x<in.w; ++x ){
     for( int y=0; y<in.h; ++y ){
@@ -762,8 +707,7 @@ void cimpl_flipImgLR( cimpl_img const in, cimpl_img * const out ){
 
 void cimpl_flipImgUD( cimpl_img const in, cimpl_img * const out ){
   // Flip image up/down
-  assert( out->h == in.h );
-  assert( out->w == in.w );
+  assert( out->h == in.h );  assert( out->w == in.w );
   assert( out->data != in.data );
   for( int x=0; x<in.w; ++x ){
     for( int y=0; y<in.h; ++y ){
@@ -772,8 +716,7 @@ void cimpl_flipImgUD( cimpl_img const in, cimpl_img * const out ){
 }
 
 void cimpl_floorImg( cimpl_img const img, cimpl_img * const out ){
-  assert( out->h == img.h );
-  assert( out->w == img.w );
+  assert( out->h == img.h );  assert( out->w == img.w );
 #if !defined(CIMPL_DONT_SSE4PT1) || !defined(CIMPL_DONT_SIMD)
   float* outData = out->data;
   int simdIters = (int) ((img.h*img.w) / 4);
@@ -792,9 +735,7 @@ void cimpl_floorImg( cimpl_img const img, cimpl_img * const out ){
 }
 
 void cimpl_floorVol( cimpl_vol const vol, cimpl_vol * const out ){
-  assert( out->h == vol.h );
-  assert( out->w == vol.w );
-  assert( out->s == vol.s );
+  assert( out->h == vol.h );  assert( out->w == vol.w );  assert( out->s == vol.s );
 #if !defined(CIMPL_DONT_SSE4PT1) || !defined(CIMPL_DONT_SIMD)
   float* outData = out->data;
 
@@ -829,37 +770,30 @@ void cimpl_floorVol( cimpl_vol const vol, cimpl_vol * const out ){
 }
 
 void cimpl_freeCmpImg( cimpl_cmpImg * const in ){
-  in->h = 0;
-  in->w = 0;
+  in->h = in->w = 0;
   free( in->data );  in->data = NULL;
 }
 
 void cimpl_freeImg( cimpl_img *in ){
-  in->h = 0;
-  in->w = 0;
+  in->h = in->w = 0;
   free( in->data );
   in->data = NULL;
 }
 
 void cimpl_freeVol( cimpl_vol * const in ){
-  in->h = 0;
-  in->w = 0;
-  in->s = 0;
+  in->h = in->w = in->s = 0;
   free( in->data );
   in->data = NULL;
 }
 
 void cimpl_getImagImg( cimpl_cmpImg const in, cimpl_img * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
+  assert( out->h == in.h );  assert( out->w == in.w );
   for( size_t i=0; i<out->h*out->w; ++i )
     in.data[i] = cimagf( out->data[i] );
 }
 
 void cimpl_getImagVol( cimpl_cmpVol const in, cimpl_vol * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
-  assert( out->s == in.s );
+  assert( out->h == in.h );  assert( out->w == in.w );  assert( out->s == in.s );
   for( size_t i=0; i<out->h*out->w*out->s; ++i )
     in.data[i] = cimagf( out->data[i] );
 }
@@ -1011,6 +945,170 @@ cimpl_vol cimpl_mallocVol( size_t const h, size_t const w, size_t s ){
   return out;
 }
 
+void cimpl_maxImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out ){
+  assert( out->h == img1.h );  assert( out->w == img1.w );
+  assert( out->h == img2.h );  assert( out->w == img2.w );
+#ifndef CIMPL_DONT_SIMD
+  size_t i;
+
+#ifndef CIMPL_DONT_AVX
+
+  unsigned long simdIters = (img1.h*img1.w) / 8;
+
+  __m256* l = (__m256*) img1.data;
+  __m256* r = (__m256*) img2.data;
+  float* outData = out->data;
+
+  for( i=0; i<simdIters; ++i, ++l, ++r, outData+=8 )
+    _mm256_store_ps(outData, _mm256_max_ps(*l, *r));
+
+  for( i=0; i < (img1.h*img1.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = fmaxf( img1.data[i+8*simdIters], img2.data[i+8*simdIters] );
+
+#else
+
+  unsigned long simdIters = (img1.h*img1.w) / 4;
+
+  __m128* l = (__m128*) img1.data;
+  __m128* r = (__m128*) img2.data;
+  float* outData = out->data;
+
+  for( i=0; i<simdIters; ++i, ++l, ++r, outData+=4 )
+    _mm_store_ps(outData, _mm_max_ps(*l, *r));
+
+  for( i=0; i < (img1.h*img1.w)-(4*simdIters); ++i )
+    out->data[i+4*simdIters] = fmaxf( img1.data[i+4*simdIters], img2.data[i+4*simdIters] );
+#endif  // #ifndef CIMPL_DONT_AVX
+  
+#else
+  for( size_t i=0; i<out->h*out->w; ++i )
+    out->data[i] = fmaxf( img1.data[i], img2.data[i] );
+#endif
+}
+
+void cimpl_maxVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
+  assert( out->h == vol1.h );  assert( out->w == vol1.w );  assert( out->s == vol1.s );
+  assert( out->h == vol2.h );  assert( out->w == vol2.w );  assert( out->s == vol2.s );
+#ifndef CIMPL_DONT_SIMD
+  size_t i;
+
+#ifndef CIMPL_DONT_AVX
+
+  unsigned long simdIters = (vol1.h*vol1.w) / 8;
+
+  __m256* l = (__m256*) vol1.data;
+  __m256* r = (__m256*) vol2.data;
+  float* outData = out->data;
+
+  for( i=0; i<simdIters; ++i, ++l, ++r, outData+=8 )
+    _mm256_store_ps(outData, _mm256_max_ps(*l, *r));
+
+  for( i=0; i < (vol1.h*vol1.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = fmaxf( vol1.data[i+8*simdIters], vol2.data[i+8*simdIters] );
+
+#else
+
+  unsigned long simdIters = (vol1.h*vol1.w) / 4;
+
+  __m128* l = (__m128*) img1.data;
+  __m128* r = (__m128*) img2.data;
+  float* outData = out->data;
+
+  for( i=0; i<simdIters; ++i, ++l, ++r, outData+=4 )
+    _mm_store_ps(outData, _mm_max_ps(*l, *r));
+
+  for( i=0; i < (vol1.h*vol1.w)-(4*simdIters); ++i )
+    out->data[i+4*simdIters] = fmaxf( vol1.data[i+4*simdIters], vol2.data[i+4*simdIters] );
+#endif  // #ifndef CIMPL_DONT_AVX
+
+#else
+  for( size_t i=0; i<out->h*out->w; ++i )
+    out->data[i] = fmaxf( vol1.data[i], vol2.data[i] );
+#endif
+}
+
+void cimpl_minImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out ){
+  assert( out->h == img1.h );  assert( out->w == img1.w );
+  assert( out->h == img2.h );  assert( out->w == img2.w );
+#ifndef CIMPL_DONT_SIMD
+  size_t i;
+  
+#ifndef CIMPL_DONT_AVX
+  
+  unsigned long simdIters = (img1.h*img1.w) / 8;
+  
+  __m256* l = (__m256*) img1.data;
+  __m256* r = (__m256*) img2.data;
+  float* outData = out->data;
+  
+  for( i=0; i<simdIters; ++i, ++l, ++r, outData+=8 )
+    _mm256_store_ps(outData, _mm256_min_ps(*l, *r));
+  
+  for( i=0; i < (img1.h*img1.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = fminf( img1.data[i+8*simdIters], img2.data[i+8*simdIters] );
+  
+#else
+  
+  unsigned long simdIters = (img1.h*img1.w) / 4;
+  
+  __m128* l = (__m128*) img1.data;
+  __m128* r = (__m128*) img2.data;
+  float* outData = out->data;
+  
+  for( i=0; i<simdIters; ++i, ++l, ++r, outData+=4 )
+    _mm_store_ps(outData, _mm_min_ps(*l, *r));
+  
+  for( i=0; i < (img1.h*img1.w)-(4*simdIters); ++i )
+    out->data[i+4*simdIters] = fminf( img1.data[i+4*simdIters], img2.data[i+4*simdIters] );
+#endif  // #ifndef CIMPL_DONT_AVX
+  
+#else
+  for( size_t i=0; i<out->h*out->w; ++i )
+    out->data[i] = fminf( img1.data[i], img2.data[i] );
+#endif
+}
+
+void cimpl_minVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
+  assert( out->h == vol1.h );  assert( out->w == vol1.w );  assert( out->s == vol1.s );
+  assert( out->h == vol2.h );  assert( out->w == vol2.w );  assert( out->s == vol2.s );
+#ifndef CIMPL_DONT_SIMD
+  size_t i;
+
+#ifndef CIMPL_DONT_AVX
+
+  unsigned long simdIters = (vol1.h*vol1.w) / 8;
+
+  __m256* l = (__m256*) vol1.data;
+  __m256* r = (__m256*) vol2.data;
+  float* outData = out->data;
+
+  for( i=0; i<simdIters; ++i, ++l, ++r, outData+=8 )
+    _mm256_store_ps(outData, _mm256_min_ps(*l, *r));
+
+  for( i=0; i < (vol1.h*vol1.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = fminf( vol1.data[i+8*simdIters], vol2.data[i+8*simdIters] );
+
+#else
+
+  unsigned long simdIters = (vol1.h*vol1.w) / 4;
+
+  __m128* l = (__m128*) img1.data;
+  __m128* r = (__m128*) img2.data;
+  float* outData = out->data;
+
+  for( i=0; i<simdIters; ++i, ++l, ++r, outData+=4 )
+    _mm_store_ps(outData, _mm_max_ps(*l, *r));
+
+  for( i=0; i < (vol1.h*vol1.w)-(4*simdIters); ++i )
+    out->data[i+4*simdIters] = fminf( vol1.data[i+4*simdIters], vol2.data[i+4*simdIters] );
+#endif  // #ifndef CIMPL_DONT_AVX
+
+#else
+  for( size_t i=0; i<out->h*out->w; ++i )
+    out->data[i] = fminf( vol1.data[i], vol2.data[i] );
+#endif
+}
+
 void cimpl_multiplyImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out ){
   assert( out->w == img1.w );
   assert( out->h == img1.h );
@@ -1054,12 +1152,8 @@ float* outData = out->data;
 }
 
 void cimpl_multiplyVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
-  assert( out->h == vol1.h );
-  assert( out->w == vol1.w );
-  assert( out->s == vol1.s );
-  assert( out->h == vol2.h );
-  assert( out->w == vol2.w );
-  assert( out->s == vol2.s );
+  assert( out->h == vol1.h );  assert( out->w == vol1.w );  assert( out->s == vol1.s );
+  assert( out->h == vol2.h );  assert( out->w == vol2.w );  assert( out->s == vol2.s );
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
 
@@ -1098,8 +1192,7 @@ void cimpl_multiplyVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol *
 }
 
 void cimpl_multiplyImgByScalar( cimpl_img const in, float const scalar, cimpl_img * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
+  assert( out->h == in.h );  assert( out->w == in.w );
 
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
@@ -1137,9 +1230,7 @@ void cimpl_multiplyImgByScalar( cimpl_img const in, float const scalar, cimpl_im
 }
 
 void cimpl_multiplyVolByScalar( cimpl_vol const in, float const scalar, cimpl_vol * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
-  assert( out->s == in.s );
+  assert( out->h == in.h );  assert( out->w == in.w );  assert( out->s == in.s );
 
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
@@ -1187,21 +1278,17 @@ void cimpl_printImg( cimpl_img const in ){
 
 void cimpl_reshapeCmpImg( size_t H, size_t W, cimpl_cmpImg * const img ){
   assert( H*W == img->h*img->w );
-  img->h = H;
-  img->w = W;
+  img->h = H;  img->w = W;
 }
 
 void cimpl_reshapeImg( size_t H, size_t W, cimpl_img * const out ){
   assert( H*W == out->h*out->w );
-  out->h = H;
-  out->w = W;
+  out->h = H;  out->w = W;
 }
 
 void cimpl_reshapeVol( size_t H, size_t W, size_t S, cimpl_vol * const out ){
   assert( H*W*S == out->h*out->w*out->s );
-  out->h = H;
-  out->w = W;
-  out->s = S;
+  out->h = H;  out->w = W;  out->s = S;
 }
 
 //void cimpl_rot( cimpl_img const in, float const angle, cimpl_img * const out ){
@@ -1221,8 +1308,7 @@ void cimpl_reshapeVol( size_t H, size_t W, size_t S, cimpl_vol * const out ){
 //}
 
 void cimpl_rot90( cimpl_img const in, cimpl_img * const out ){
-  assert( out->h == in.w );
-  assert( out->w == in.h );
+  assert( out->h == in.w );  assert( out->w == in.h );
   assert( out->data != in.data );
   for( size_t x=0; x<out->w; ++x ){
     for( size_t y=0; y<out->h; ++y ){
@@ -1231,8 +1317,7 @@ void cimpl_rot90( cimpl_img const in, cimpl_img * const out ){
 }
 
 void cimpl_rot180( cimpl_img const in, cimpl_img * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
+  assert( out->h == in.h );  assert( out->w == in.w );
   assert( out->data != in.data );
   size_t imgSize = in.h*in.w;
   for( size_t i=0; i<imgSize; ++i )
@@ -1240,8 +1325,7 @@ void cimpl_rot180( cimpl_img const in, cimpl_img * const out ){
 }
 
 void cimpl_rot270( cimpl_img const in, cimpl_img * const out ){
-  assert( out->h == in.w );
-  assert( out->w == in.h );
+  assert( out->h == in.w );  assert( out->w == in.h );
   assert( out->data != in.data );
   for( size_t x=0; x<out->w; ++x ){
     for( size_t y=0; y<out->h; ++y ){
@@ -1250,8 +1334,7 @@ void cimpl_rot270( cimpl_img const in, cimpl_img * const out ){
 }
 
 void cimpl_roundImg( cimpl_img const img, cimpl_img * const out ){
-  assert( out->h == img.h );
-  assert( out->w == img.w );
+  assert( out->h == img.h );  assert( out->w == img.w );
 #if !defined(CIMPL_DONT_SSE4PT1) || !defined(CIMPL_DONT_SIMD)
   float* outData = out->data;
 
@@ -1291,9 +1374,7 @@ void cimpl_roundImg( cimpl_img const img, cimpl_img * const out ){
 }
 
 void cimpl_roundVol( cimpl_vol const vol, cimpl_vol * const out ){
-  assert( out->h == vol.h );
-  assert( out->w == vol.w );
-  assert( out->s == vol.s );
+  assert( out->h == vol.h );  assert( out->w == vol.w );  assert( out->s == vol.s );
 #if !defined(CIMPL_DONT_SSE4PT1) || !defined(CIMPL_DONT_SIMD)
   float* outData = out->data;
   
@@ -1346,8 +1427,7 @@ void cimpl_sliceImgY( cimpl_img const in, size_t yIndx, float * const out ){
 }
 
 void cimpl_sliceX( cimpl_vol const in, size_t xIndx, cimpl_img * const out ){
-  assert( in.h == out->h );
-  assert( in.s == out->w );
+  assert( in.h == out->h );  assert( in.s == out->w );
   assert( xIndx < in.w );
   for( size_t x=0; x<out->w; ++x ){
     for( size_t y=0; y<out->h; ++y ){
@@ -1364,8 +1444,7 @@ void cimpl_sliceXZ( cimpl_vol const in, size_t xIndx, size_t zIndx,
 }
 
 void cimpl_sliceY( cimpl_vol const in, size_t yIndx, cimpl_img * const out ){
-  assert( in.w == out->h );
-  assert( in.s == out->w );
+  assert( in.w == out->h );  assert( in.s == out->w );
   assert( yIndx < in.w );
   for( size_t x=0; x<out->w; ++x ){
     for( size_t y=0; y<out->h; ++y ){
@@ -1374,7 +1453,7 @@ void cimpl_sliceY( cimpl_vol const in, size_t yIndx, cimpl_img * const out ){
 }
 
 void cimpl_sliceYX( cimpl_vol const in, size_t yIndx, size_t xIndx,
-                   float * const out ){
+  float * const out ){
   assert( yIndx < in.h );
   assert( xIndx < in.w );
   for( size_t z=0; z<in.s; ++z )
@@ -1390,8 +1469,7 @@ void cimpl_sliceYZ( cimpl_vol const in, size_t yIndx, size_t zIndx,
 }
 
 void cimpl_sliceZ( cimpl_vol const in, size_t zIndx, cimpl_img * const out ){
-  assert( in.h == out->h );
-  assert( in.w == out->w );
+  assert( in.h == out->h );  assert( in.w == out->w );
   assert( zIndx < in.s );
   for( size_t x=0; x<out->w; ++x ){
     for( size_t y=0; y<out->h; ++y ){
@@ -1400,8 +1478,7 @@ void cimpl_sliceZ( cimpl_vol const in, size_t zIndx, cimpl_img * const out ){
 }
 
 void cimpl_spaceConvImgTemplate( cimpl_img const img1, cimpl_img const t, cimpl_img * const out ){
-  assert( out->h == img1.h );
-  assert( out->w == img1.w );
+  assert( out->h == img1.h );  assert( out->w == img1.w );
   assert( t.h % 2 == 1 );
   assert( t.w % 2 == 1 );
   
@@ -1427,8 +1504,7 @@ void cimpl_spaceConvImgTemplate( cimpl_img const img1, cimpl_img const t, cimpl_
 }
 
 void cimpl_sqrtImg( cimpl_img const in, cimpl_img * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
+  assert( out->h == in.h );  assert( out->w == in.w );
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
 
@@ -1463,9 +1539,7 @@ void cimpl_sqrtImg( cimpl_img const in, cimpl_img * const out ){
 }
 
 void cimpl_sqrtVol( cimpl_vol const in, cimpl_vol * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
-  assert( out->s == in.s );
+  assert( out->h == in.h );  assert( out->w == in.w );  assert( out->s == in.s );
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
 
@@ -1503,8 +1577,7 @@ void cimpl_sqrtVol( cimpl_vol const in, cimpl_vol * const out ){
 
 void cimpl_subImg( cimpl_img const in, size_t const h1, size_t const w1,
   cimpl_img * const out ){
-  assert( h1+out->h < in.h );
-  assert( w1+out->w < in.w );
+  assert( h1+out->h < in.h );  assert( w1+out->w < in.w );
 
   for( size_t x=0; x<out->w; ++x ){
     for( size_t y=0; y<out->h; ++y ){
@@ -1514,10 +1587,8 @@ void cimpl_subImg( cimpl_img const in, size_t const h1, size_t const w1,
 
 void cimpl_subtractCmpImgs( cimpl_cmpImg const img1, cimpl_cmpImg const img2,
                       cimpl_cmpImg * const out ){
-  assert( out->h == img1.h );
-  assert( out->w == img1.w );
-  assert( out->h == img2.h );
-  assert( out->w == img2.w );
+  assert( out->h == img1.h );  assert( out->w == img1.w );
+  assert( out->h == img2.h );  assert( out->w == img2.w );
 #ifndef CIMPL_DONT_SIMD
   size_t i;
   unsigned long simdIters = (img1.h*img1.w) / 2;
@@ -1538,10 +1609,8 @@ void cimpl_subtractCmpImgs( cimpl_cmpImg const img1, cimpl_cmpImg const img2,
 }
 
 void cimpl_subtractImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out ){
-  assert( out->w == img1.w );
-  assert( out->h == img1.h );
-  assert( out->w == img2.w );
-  assert( out->h == img2.h );
+  assert( out->w == img1.w );  assert( out->h == img1.h );
+  assert( out->w == img2.w );  assert( out->h == img2.h );
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
 
@@ -1582,12 +1651,8 @@ void cimpl_subtractImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img *
 }
 
 void cimpl_subtractVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
-  assert( out->h == vol1.h );
-  assert( out->w == vol1.w );
-  assert( out->s == vol1.s );
-  assert( out->h == vol2.h );
-  assert( out->w == vol2.w );
-  assert( out->s == vol2.s );
+  assert( out->h == vol1.h );  assert( out->w == vol1.w );  assert( out->s == vol1.s );
+  assert( out->h == vol2.h );  assert( out->w == vol2.w );  assert( out->s == vol2.s );
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
 
@@ -1628,8 +1693,7 @@ void cimpl_subtractVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol *
 }
 
 void cimpl_subtractImgFromScalar( cimpl_img const in, float const scalar, cimpl_img * const out ){
-  assert( out->w == in.w );
-  assert( out->h == in.h );
+  assert( out->w == in.w );  assert( out->h == in.h );
   for( size_t i=0; i<in.w*in.h; ++i )
     out->data[i] = scalar - in.data[i];
 }

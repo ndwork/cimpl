@@ -100,6 +100,10 @@ void cimpl_linInterpImg( cimpl_img const img, size_t const N, float const * cons
 cimpl_cmpImg cimpl_mallocCmpImg( size_t const h, size_t const w );
 cimpl_img cimpl_mallocImg( size_t const h, size_t const w );
 cimpl_vol cimpl_mallocVol( size_t const h, size_t const w, size_t s );
+void cimpl_maxImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );
+void cimpl_maxVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out );
+void cimpl_minImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );
+void cimpl_minVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out );
 void cimpl_multiplyImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );
 void cimpl_multiplyVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out );
 void cimpl_multiplyImgByScalar( cimpl_img const in, float const scalar, cimpl_img * const out );
