@@ -13,7 +13,7 @@
 #include <string.h>
 #include "cimpl.h"
 
-#if !defined(CIMPL_DONT_SSE1) || !defined(CIMPL_DONT_SIMD)
+#ifndef CIMPL_DONT_SIMD
 #include <xmmintrin.h>
 #endif
 
@@ -88,6 +88,23 @@ void cimpl_addImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * cons
   assert( out->h == img2.h );
 #ifndef CIMPL_DONT_SIMD
   size_t i;
+
+#ifndef CIMPL_DONT_AVX
+
+  unsigned long simdIters = (img1.h*img1.w) / 8;
+
+  __m256* l = (__m256*) img1.data;
+  __m256* r = (__m256*) img2.data;
+  float* outData = out->data;
+
+  for( i=0; i<simdIters; ++i, ++l, ++r, outData+=8 )
+    _mm256_store_ps(outData, _mm256_add_ps(*l, *r));
+
+  for( i=0; i < (img1.h*img1.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = img1.data[i+8*simdIters] + img2.data[i+8*simdIters];
+
+#else
+
   unsigned long simdIters = (img1.h*img1.w) / 4;
 
   __m128* l = (__m128*) img1.data;
@@ -99,6 +116,8 @@ void cimpl_addImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * cons
 
   for( i=0; i < (img1.h*img1.w)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = img1.data[i+4*simdIters] + img2.data[i+4*simdIters];
+#endif  // #ifndef CIMPL_DONT_AVX
+
 #else
   for( size_t i=0; i<img1.h*img1.w; ++i)
     out->data[i] = img1.data[i] + img2.data[i];
@@ -113,17 +132,37 @@ void cimpl_addVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * cons
   assert( out->h == vol2.h );
   assert( out->s == vol2.s );
 #ifndef CIMPL_DONT_SIMD
+  size_t i;
+  float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  unsigned long simdIters = (vol1.h*vol1.w*vol1.s) / 8;
+  
+  __m256* l = (__m256*) vol1.data;
+  __m256* r = (__m256*) vol2.data;
+  
+  for( i=0; i<simdIters; ++i, ++l, ++r, outData+=8 )
+    _mm256_store_ps(outData, _mm256_add_ps(*l, *r));
+  
+  for( i=0; i < (vol1.h*vol1.w*vol1.s)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = vol1.data[i+8*simdIters] + vol2.data[i+8*simdIters];
+
+#else
+
   unsigned long simdIters = (vol1.h*vol1.w*vol1.s) / 4;
 
   __m128* l = (__m128*) vol1.data;
   __m128* r = (__m128*) vol2.data;
-  float* outData = out->data;
 
-  for( size_t i=0; i<simdIters; ++i, ++l, ++r, outData+=4 )
+  for( i=0; i<simdIters; ++i, ++l, ++r, outData+=4 )
     _mm_store_ps(outData, _mm_add_ps(*l, *r));
 
-  for( int i=0; i < (vol1.h*vol1.w*vol1.s)-(4*simdIters); ++i )
+  for( i=0; i < (vol1.h*vol1.w*vol1.s)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = vol1.data[i+4*simdIters] + vol2.data[i+4*simdIters];
+
+#endif  // #ifndef CIMPL_DONT_AVX
+
 #else
   for( int i=0; i<vol1.h*vol1.w*vol1.s; ++i)
     out->data[i] = vol1.data[i] + vol2.data[i];
@@ -133,18 +172,36 @@ void cimpl_addVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * cons
 void cimpl_addScalar2Img( float const scalar, cimpl_img const in, cimpl_img * const out ){
   assert( out->h == in.h );
   assert( out->w == in.w );
-  
+
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) ((in.h*in.w) / 8);
+  const __m256 s = _mm256_set1_ps(scalar);
+  __m256* inData = (__m256*) in.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++inData, outData += 8)
+    _mm256_store_ps(outData, _mm256_add_ps(*inData, s));
+  
+  for( int i=0; i < (in.h*in.w)-(8*simdIters); ++i )
+    out->data[i+4*simdIters] = in.data[i+8*simdIters] + scalar;
+
+#else
+
   int simdIters = (int) ((in.h*in.w) / 4);
   const __m128 s = _mm_set1_ps(scalar);
   __m128* inData = (__m128*) in.data;
-
+  
   for(size_t i = 0; i<simdIters; ++i, ++inData, outData += 4)
     _mm_store_ps(outData, _mm_add_ps(*inData, s));
   
   for( int i=0; i < (in.h*in.w)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = in.data[i+4*simdIters] + scalar;
+  
+#endif  // #ifdef CIMPL_DONT_AVX
+
 #else
   for( size_t i=0; i<in.w*in.h; ++i )
     out->data[i] = in.data[i] + scalar;
@@ -158,6 +215,21 @@ void cimpl_addScalar2Vol( float const scalar, cimpl_vol const in, cimpl_vol * co
   
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
+  
+#ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) ((in.h*in.w*in.s) / 8);
+  const __m256 s = _mm256_set1_ps(scalar);
+  __m256* inData = (__m256*) in.data;
+  
+  for(size_t i = 0; i<simdIters; ++i, ++inData, outData += 8)
+    _mm256_store_ps(outData, _mm256_add_ps(*inData, s));
+  
+  for( int i=0; i < (in.h*in.w*in.s)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = in.data[i+8*simdIters] + scalar;
+
+#else
+
   int simdIters = (int) ((in.h*in.w*in.s) / 4);
   const __m128 s = _mm_set1_ps(scalar);
   __m128* inData = (__m128*) in.data;
@@ -167,6 +239,9 @@ void cimpl_addScalar2Vol( float const scalar, cimpl_vol const in, cimpl_vol * co
 
   for( int i=0; i < (in.h*in.w*in.s)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = in.data[i+4*simdIters] + scalar;
+
+#endif  // #ifdef CIMPL_DONT_AVX
+
 #else
   for( size_t i=0; i<in.w*in.h*in.s; ++i )
     out->data[i] = in.data[i] + scalar;
@@ -193,6 +268,21 @@ void cimpl_ceilImg( cimpl_img const img, cimpl_img * const out ){
   assert( out->w == img.w );
 #if !defined(CIMPL_DONT_SSE4PT1) || !defined(CIMPL_DONT_SIMD)
   float* outData = out->data;
+  
+#ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) ((img.h*img.w) / 8);
+  __m256* ptr = (__m256*)img.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++ptr, outData += 8){
+    _mm256_store_ps(outData, _mm256_ceil_ps( *ptr ) );
+  }
+
+  for( int i=0; i < (img.h*img.w)-(8*simdIters); ++i )
+    out->data[i+4*simdIters] = ceilf( img.data[i+8*simdIters] );
+
+#else
+
   int simdIters = (int) ((img.h*img.w) / 4);
   __m128* ptr = (__m128*)img.data;
 
@@ -202,6 +292,8 @@ void cimpl_ceilImg( cimpl_img const img, cimpl_img * const out ){
 
   for( int i=0; i < (img.h*img.w)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = ceilf( img.data[i+4*simdIters] );
+
+#endif  // #ifndef CIMPL_DONT_AVX
 
 #else
   for( size_t i=0; i<img.h*img.w; ++i )
@@ -215,6 +307,22 @@ void cimpl_ceilVol( cimpl_vol const vol, cimpl_vol * const out ){
   assert( out->s == vol.s );
 #if !defined(CIMPL_DONT_SSE4PT1) || !defined(CIMPL_DONT_SIMD)
   float* outData = out->data;
+  
+#ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) ((vol.h*vol.w*vol.s) / 8);
+  __m256* ptr = (__m256*)vol.data;
+  
+  for(size_t i = 0; i<simdIters; ++i, ++ptr, outData += 8){
+    _mm256_store_ps(outData, _mm256_ceil_ps( *ptr ) );
+  }
+  
+  for( int i=0; i < (vol.h*vol.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = ceilf( vol.data[i+8*simdIters] );
+  
+#else
+
+  float* outData = out->data;
   int simdIters = (int) ((vol.h*vol.w*vol.s) / 4);
   __m128* ptr = (__m128*)vol.data;
 
@@ -224,6 +332,8 @@ void cimpl_ceilVol( cimpl_vol const vol, cimpl_vol * const out ){
 
   for( int i=0; i < (vol.h*vol.w)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = ceilf( vol.data[i+4*simdIters] );
+
+#endif  // #ifndef CIMPL_DONT_AVX
 
 #else
   for( size_t i=0; i<vol.h*vol.w*vol.s; ++i )
@@ -516,17 +626,36 @@ void cimpl_divideImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * c
   assert( out->w == img2.w );
   assert( out->h == img2.h );
 #ifndef CIMPL_DONT_SIMD
+  float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+  
+  unsigned long simdIters = (img1.h*img2.w) / 8;
+
+  __m256* l = (__m256*) img1.data;
+  __m256* r = (__m256*) img2.data;
+
+  for( size_t i=0; i<simdIters; ++i, ++l, ++r, ++outData)
+    _mm256_store_ps(outData, _mm256_div_ps(*l, *r));
+  
+  for( int i=0; i < (img1.h*img1.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = img1.data[i+8*simdIters] / img2.data[i+8*simdIters];
+  
+#else
+
   unsigned long simdIters = (img1.h*img2.w) / 4;
 
   __m128* l = (__m128*) img1.data;
   __m128* r = (__m128*) img2.data;
-  float* outData = out->data;
 
   for( size_t i=0; i<simdIters; ++i, ++l, ++r, ++outData)
     _mm_store_ps(outData, _mm_div_ps(*l, *r));
 
   for( int i=0; i < (img1.h*img1.w)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = img1.data[i+4*simdIters] / img2.data[i+4*simdIters];
+
+#endif  // #ifndef CIMPL_DONT_AVX
+
 #else
   for( int i=0; i<img1.h*img1.w; ++i)
     out->data[i] = img1.data[i] / img2.data[i];
@@ -541,17 +670,36 @@ void cimpl_divideVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * c
   assert( out->w == vol2.w );
   assert( out->s == vol2.s );
 #ifndef CIMPL_DONT_SIMD
+  float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  unsigned long simdIters = (vol1.h*vol1.w*vol1.s) / 8;
+
+  __m256* l = (__m256*) vol1.data;
+  __m256* r = (__m256*) vol2.data;
+
+  for( size_t i=0; i<simdIters; ++i, ++l, ++r, ++outData)
+    _mm256_store_ps(outData, _mm256_div_ps(*l, *r));
+
+  for( int i=0; i < (vol1.h*vol1.w*vol1.s)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = vol1.data[i+8*simdIters] / vol2.data[i+8*simdIters];
+
+#else
+
   unsigned long simdIters = (vol1.h*vol1.w*vol1.s) / 4;
   
   __m128* l = (__m128*) vol1.data;
   __m128* r = (__m128*) vol2.data;
-  float* outData = out->data;
   
   for( size_t i=0; i<simdIters; ++i, ++l, ++r, ++outData)
     _mm_store_ps(outData, _mm_div_ps(*l, *r));
   
   for( int i=0; i < (vol1.h*vol1.w*vol1.s)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = vol1.data[i+4*simdIters] / vol2.data[i+4*simdIters];
+
+#endif  // #ifdef CIMPL_DONT_AVX
+
 #else
   for( int i=0; i<vol1.h*vol1.w*vol1.s; ++i)
     out->data[i] = vol1.data[i] / vol2.data[i];
@@ -649,6 +797,20 @@ void cimpl_floorVol( cimpl_vol const vol, cimpl_vol * const out ){
   assert( out->s == vol.s );
 #if !defined(CIMPL_DONT_SSE4PT1) || !defined(CIMPL_DONT_SIMD)
   float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) ((vol.h*vol.w*vol.s) / 8);
+  __m256* ptr = (__m256*)vol.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++ptr, outData += 8)
+    _mm256_store_ps(outData, _mm256_floor_ps(*ptr));
+
+  for( int i=0; i < (vol.h*vol.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = floorf( vol.data[i+8*simdIters] );
+
+#else
+
   int simdIters = (int) ((vol.h*vol.w*vol.s) / 4);
   __m128* ptr = (__m128*)vol.data;
 
@@ -657,6 +819,8 @@ void cimpl_floorVol( cimpl_vol const vol, cimpl_vol * const out ){
 
   for( int i=0; i < (vol.h*vol.w)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = floorf( vol.data[i+4*simdIters] );
+
+#endif  // #ifndef CIMPL_DONT_AVX
 
 #else
   for( size_t i=0; i<vol.h*vol.w*vol.s; ++i )
@@ -853,17 +1017,36 @@ void cimpl_multiplyImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img *
   assert( out->w == img2.w );
   assert( out->h == img2.h );
 #ifndef CIMPL_DONT_SIMD
+float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  unsigned long simdIters = (img1.h*img1.w) / 8;
+
+  __m256* l = (__m256*) img1.data;
+  __m256* r = (__m256*) img2.data;
+
+  for( size_t i=0; i<simdIters; ++i, ++l, ++r, outData+=8 )
+    _mm256_store_ps(outData, _mm256_mul_ps(*l, *r));
+
+  for( int i=0; i < (img1.h*img1.w)-(4*simdIters); ++i )
+    out->data[i+8*simdIters] = img1.data[i+8*simdIters] * img2.data[i+8*simdIters];
+
+#else
+
   unsigned long simdIters = (img1.h*img1.w) / 4;
 
   __m128* l = (__m128*) img1.data;
   __m128* r = (__m128*) img2.data;
-  float* outData = out->data;
 
   for( size_t i=0; i<simdIters; ++i, ++l, ++r, outData+=4 )
     _mm_store_ps(outData, _mm_mul_ps(*l, *r));
 
   for( int i=0; i < (img1.h*img1.w)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = img1.data[i+4*simdIters] * img2.data[i+4*simdIters];
+
+#endif  // #ifndef CIMPL_DONT_SIMD
+
 #else
   for( int i=0; i<img1.h*img1.w; ++i)
     out->data[i] = img1.data[i] * img2.data[i];
@@ -878,17 +1061,36 @@ void cimpl_multiplyVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol *
   assert( out->w == vol2.w );
   assert( out->s == vol2.s );
 #ifndef CIMPL_DONT_SIMD
+  float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  unsigned long simdIters = (vol1.h*vol1.w*vol1.s) / 8;
+
+  __m256* l = (__m256*) vol1.data;
+  __m256* r = (__m256*) vol2.data;
+
+  for( size_t i=0; i<simdIters; ++i, ++l, ++r, ++outData)
+    _mm256_store_ps(outData, _mm256_mul_ps(*l, *r));
+
+  for( int i=0; i < (vol1.h*vol1.w*vol1.s)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = vol1.data[i+8*simdIters] * vol2.data[i+8*simdIters];
+
+#else
+
   unsigned long simdIters = (vol1.h*vol1.w*vol1.s) / 4;
 
   __m128* l = (__m128*) vol1.data;
   __m128* r = (__m128*) vol2.data;
-  float* outData = out->data;
 
   for( size_t i=0; i<simdIters; ++i, ++l, ++r, ++outData)
     _mm_store_ps(outData, _mm_mul_ps(*l, *r));
 
   for( int i=0; i < (vol1.h*vol1.w*vol1.s)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = vol1.data[i+4*simdIters] * vol2.data[i+4*simdIters];
+
+#endif  // #ifndef CIMPL_DONT_AVX
+
 #else
   for( int i=0; i<vol1.h*vol1.w*vol1.s; ++i)
     out->data[i] = vol1.data[i] * vol2.data[i];
@@ -901,6 +1103,21 @@ void cimpl_multiplyImgByScalar( cimpl_img const in, float const scalar, cimpl_im
 
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) ((in.h*in.w) / 8);
+  const __m256 s = _mm256_set1_ps(scalar);
+  __m256* inData = (__m256*) in.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++inData, outData += 8)
+    _mm256_store_ps(outData, _mm256_mul_ps(*inData, s));
+
+  for( int i=0; i < (in.h*in.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = in.data[i+8*simdIters] * scalar;
+
+#else
+  
   int simdIters = (int) ((in.h*in.w) / 4);
   const __m128 s = _mm_set1_ps(scalar);
   __m128* inData = (__m128*) in.data;
@@ -910,6 +1127,9 @@ void cimpl_multiplyImgByScalar( cimpl_img const in, float const scalar, cimpl_im
 
   for( int i=0; i < (in.h*in.w)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = in.data[i+4*simdIters] * scalar;
+
+#endif  // #ifndef CIMPL_DONT_AVX
+
 #else
   for( size_t i=0; i<in.h*in.w; ++i )
     out->data[i] = in.data[i] * scalar;
@@ -923,6 +1143,21 @@ void cimpl_multiplyVolByScalar( cimpl_vol const in, float const scalar, cimpl_vo
 
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) ((in.h*in.w*in.s) / 8);
+  const __m256 s = _mm256_set1_ps(scalar);
+  __m256* inData = (__m256*) in.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++inData, outData += 8)
+    _mm256_store_ps(outData, _mm256_div_ps(*inData, s));
+
+  for( int i=0; i < (in.h*in.w*in.s)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = in.data[i+8*simdIters] * scalar;
+
+#else
+
   int simdIters = (int) ((in.h*in.w*in.s) / 4);
   const __m128 s = _mm_set1_ps(scalar);
   __m128* inData = (__m128*) in.data;
@@ -932,6 +1167,9 @@ void cimpl_multiplyVolByScalar( cimpl_vol const in, float const scalar, cimpl_vo
 
   for( int i=0; i < (in.h*in.w*in.s)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = in.data[i+4*simdIters] * scalar;
+
+#endif  // #ifndef CIMPL_DONT_AVX
+
 #else
   for( size_t i=0; i<in.h*in.w*in.s; ++i )
     out->data[i] = in.data[i] * scalar;
@@ -1016,6 +1254,22 @@ void cimpl_roundImg( cimpl_img const img, cimpl_img * const out ){
   assert( out->w == img.w );
 #if !defined(CIMPL_DONT_SSE4PT1) || !defined(CIMPL_DONT_SIMD)
   float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) ((img.h*img.w) / 8);
+  __m256* ptr = (__m256*)img.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++ptr, outData += 8){
+    _mm256_store_ps(outData,
+      _mm256_round_ps( *ptr, (_MM_FROUND_TO_NEAREST_INT |_MM_FROUND_NO_EXC) )
+    );
+  }
+
+  for( int i=0; i < (img.h*img.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = roundf( img.data[i+8*simdIters] );
+
+#else
   int simdIters = (int) ((img.h*img.w) / 4);
   __m128* ptr = (__m128*)img.data;
 
@@ -1027,6 +1281,8 @@ void cimpl_roundImg( cimpl_img const img, cimpl_img * const out ){
   
   for( int i=0; i < (img.h*img.w)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = roundf( img.data[i+4*simdIters] );
+
+#endif  // #ifndef CIMPL_DONT_AVX
   
 #else
   for( size_t i=0; i<img.h*img.w; ++i )
@@ -1040,6 +1296,23 @@ void cimpl_roundVol( cimpl_vol const vol, cimpl_vol * const out ){
   assert( out->s == vol.s );
 #if !defined(CIMPL_DONT_SSE4PT1) || !defined(CIMPL_DONT_SIMD)
   float* outData = out->data;
+  
+#ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) ((vol.h*vol.w*vol.s) / 8);
+  __m256* ptr = (__m256*)vol.data;
+  
+  for(size_t i = 0; i<simdIters; ++i, ++ptr, outData += 8){
+    _mm256_store_ps(outData,
+      _mm256_round_ps( *ptr, (_MM_FROUND_TO_NEAREST_INT |_MM_FROUND_NO_EXC) )
+    );
+  }
+  
+  for( int i=0; i < (vol.h*vol.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = roundf( vol.data[i+8*simdIters] );
+
+#else
+
   int simdIters = (int) ((vol.h*vol.w*vol.s) / 4);
   __m128* ptr = (__m128*)vol.data;
 
@@ -1051,6 +1324,8 @@ void cimpl_roundVol( cimpl_vol const vol, cimpl_vol * const out ){
 
   for( int i=0; i < (vol.h*vol.w)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = roundf( vol.data[i+4*simdIters] );
+
+#endif
 
 #else
   for( size_t i=0; i<vol.h*vol.w*vol.s; ++i )
@@ -1156,6 +1431,20 @@ void cimpl_sqrtImg( cimpl_img const in, cimpl_img * const out ){
   assert( out->w == in.w );
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) ((in.h*in.w) / 8);
+  __m256* ptr = (__m256*)in.data;
+  
+  for(size_t i = 0; i<simdIters; ++i, ++ptr, outData += 8)
+    _mm256_store_ps(outData, _mm256_sqrt_ps(*ptr));
+  
+  for( int i=0; i < (in.h*in.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = sqrt( in.data[i+8*simdIters] );
+
+#else
+
   int simdIters = (int) ((in.h*in.w) / 4);
   __m128* ptr = (__m128*)in.data;
 
@@ -1164,6 +1453,8 @@ void cimpl_sqrtImg( cimpl_img const in, cimpl_img * const out ){
 
   for( int i=0; i < (in.h*in.w)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = sqrt( in.data[i+4*simdIters] );
+
+#endif
     
 #else
   for( size_t i=0; i<in.h*in.w; ++i )
@@ -1177,6 +1468,20 @@ void cimpl_sqrtVol( cimpl_vol const in, cimpl_vol * const out ){
   assert( out->s == in.s );
 #ifndef CIMPL_DONT_SIMD
   float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) ((in.h*in.w*in.s) / 8);
+  __m256* ptr = (__m256*)in.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++ptr, outData += 8)
+    _mm256_store_ps(outData, _mm256_sqrt_ps(*ptr));
+
+  for( int i=0; i < (in.h*in.w*in.s)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = sqrt( in.data[i+8*simdIters] );
+
+#else
+
   int simdIters = (int) ((in.h*in.w*in.s) / 4);
   __m128* ptr = (__m128*)in.data;
 
@@ -1186,10 +1491,14 @@ void cimpl_sqrtVol( cimpl_vol const in, cimpl_vol * const out ){
   for( int i=0; i < (in.h*in.w*in.s)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = sqrt( in.data[i+4*simdIters] );
 
-#else
+#endif  // #ifndef CIMPL_DONT_AVX
+
+#else  // #ifndef CIMPL_DONT_SIMD
+
   for( size_t i=0; i<in.h*in.w*in.s; ++i )
     out->data[i] = sqrt( in.data[i] );
-#endif
+
+#endif  // #ifndef CIMPL_DONT_SIMD
 }
 
 void cimpl_subImg( cimpl_img const in, size_t const h1, size_t const w1,
@@ -1234,21 +1543,42 @@ void cimpl_subtractImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img *
   assert( out->w == img2.w );
   assert( out->h == img2.h );
 #ifndef CIMPL_DONT_SIMD
+  float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  unsigned long simdIters = (img1.h*img2.w) / 8;
+
+  __m256* l = (__m256*) img1.data;
+  __m256* r = (__m256*) img2.data;
+
+  for( size_t i=0; i<simdIters; ++i, ++l, ++r, outData+=8 )
+    _mm256_store_ps(outData, _mm256_sub_ps(*l, *r));
+
+  for( int i=0; i < (img1.h*img1.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = img1.data[i+8*simdIters] - img2.data[i+8*simdIters];
+
+#else  // #ifndef CIMPL_DONT_AVX
+
   unsigned long simdIters = (img1.h*img2.w) / 4;
 
   __m128* l = (__m128*) img1.data;
   __m128* r = (__m128*) img2.data;
-  float* outData = out->data;
 
   for( size_t i=0; i<simdIters; ++i, ++l, ++r, outData+=4 )
     _mm_store_ps(outData, _mm_sub_ps(*l, *r));
 
   for( int i=0; i < (img1.h*img1.w)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = img1.data[i+4*simdIters] - img2.data[i+4*simdIters];
-#else
+
+#endif  // #ifndef CIMPL_DONT_AVX
+
+#else  // #ifndef CIMPL_DONT_SIMD
+
   for( int i=0; i<img1.h*img1.w; ++i)
     out->data[i] = img1.data[i] - img2.data[i];
-#endif
+
+#endif  // #ifndef CIMPL_DONT_SIMD
 }
 
 void cimpl_subtractVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
@@ -1259,21 +1589,42 @@ void cimpl_subtractVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol *
   assert( out->w == vol2.w );
   assert( out->s == vol2.s );
 #ifndef CIMPL_DONT_SIMD
+  float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  unsigned long simdIters = (vol1.h*vol1.w*vol1.s) / 8;
+  
+  __m256* l = (__m256*) vol1.data;
+  __m256* r = (__m256*) vol2.data;
+  
+  for( size_t i=0; i<simdIters; ++i, ++l, ++r, outData+=8 )
+    _mm256_store_ps(outData, _mm256_sub_ps(*l, *r));
+  
+  for( int i=0; i < (vol1.h*vol1.w*vol1.s)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = vol1.data[i+8*simdIters] - vol2.data[i+8*simdIters];
+
+#else  // #ifndef CIMPL_DONT_AVX
+
   unsigned long simdIters = (vol1.h*vol1.w*vol1.s) / 4;
   
   __m128* l = (__m128*) vol1.data;
   __m128* r = (__m128*) vol2.data;
-  float* outData = out->data;
 
   for( size_t i=0; i<simdIters; ++i, ++l, ++r, outData+=4 )
     _mm_store_ps(outData, _mm_sub_ps(*l, *r));
 
   for( int i=0; i < (vol1.h*vol1.w*vol1.s)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = vol1.data[i+4*simdIters] - vol2.data[i+4*simdIters];
-#else
+
+#endif  // #ifndef CIMPL_DONT_AVX
+
+#else  // #ifndef CIMPL_DONT_SIMD
+
   for( int i=0; i<img1.h*img1.w; ++i)
     out->data[i] = vol1.data[i] - vol2.data[i];
-#endif
+
+#endif  // #ifndef CIMPL_DONT_SIMD
 }
 
 void cimpl_subtractImgFromScalar( cimpl_img const in, float const scalar, cimpl_img * const out ){
@@ -1284,10 +1635,11 @@ void cimpl_subtractImgFromScalar( cimpl_img const in, float const scalar, cimpl_
 }
 
 void cimpl_subtractScalarFromImg( cimpl_img const in, float const scalar, cimpl_img * const out ){
-  assert( out->h == in.h );
-  assert( out->w == in.w );
-  for( size_t i=0; i<in.w*in.h; ++i )
-    out->data[i] = in.data[i] - scalar;
+  cimpl_addScalar2Img( -scalar, in, out );
+}
+
+void cimpl_subtractScalarFromVol( cimpl_vol const in, float const scalar, cimpl_vol * const out ){
+  cimpl_addScalar2Vol( -scalar, in, out );
 }
 
 float cimpl_sumImg( cimpl_img const * const in ){

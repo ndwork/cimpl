@@ -132,6 +132,7 @@ void cimpl_subtractImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img *
 void cimpl_subtractVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out );
 void cimpl_subtractImgFromScalar( cimpl_img const in, float const scalar, cimpl_img * const out );
 void cimpl_subtractScalarFromImg( cimpl_img const in, float const scalar, cimpl_img * const out );
+void cimpl_subtractScalarFromVol( cimpl_vol const in, float const scalar, cimpl_vol * const out );
 float cimpl_sumImg( cimpl_img const * const in );
 float cimpl_sumVol( cimpl_vol const * const in );
 void cimpl_zeroCmpImg( cimpl_cmpImg * const img  );
