@@ -28,10 +28,10 @@
 
 // ----- Static Functions -----
 
-static inline void cimpl_memcpy( float * const dst, float * const src, size_t N ){
+static inline void cimpl_memcpy( void * const dst, void * const src, size_t N ){
 #ifndef CIMPL_DONT_SIMD
-  float* dstPtr = dst;
-  float* srcPtr = src;
+  float* dstPtr = (float*) dst;
+  float* srcPtr = (float*) src;
 
 #ifndef CIMPL_DONT_AVX
 
