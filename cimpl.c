@@ -26,6 +26,42 @@
 #endif
 
 
+// ----- Static Functions -----
+
+static inline void cimpl_memcpy( float * const dst, float * const src, size_t N ){
+#ifndef CIMPL_DONT_SIMD
+  float* dstPtr = dst;
+  float* srcPtr = src;
+
+#ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) N / 8;
+
+  for( size_t i=0; i<simdIters; ++i, srcPtr+=8, dstPtr+=8 )
+    _mm256_store_ps( dstPtr, _mm256_load_ps( srcPtr ) );
+
+  memcpy( dst+8*simdIters, src+8*simdIters, N-8*simdIters );
+
+#else  // #ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) N / 4;
+
+  for( size_t i=0; i<simdIters; ++i, srcPtr+=4, dstPtr+=4 )
+    _mm_store_ps( dstPtr, _mm_load_ps( srcPtr ) );
+
+  memcpy( dst+4*simdIters, src+4*simdIters, N-4*simdIters );
+
+#endif  // #ifndef CIMPL_DONT_AVX
+
+#else  // #ifndef CIMPL_DONT_SIMD
+  memcpy(dest, src, N);
+#endif  // #ifndef CIMPL_DONT_SIMD
+}
+
+
+
+// ----- Public Functions -----
+
 void cimpl_absCmpImg( cimpl_cmpImg const in, cimpl_img * const out ){
   assert( out->h == in.h );  assert( out->w == in.w );
   for( size_t i=0; i<in.h*in.w; ++i )
@@ -358,8 +394,8 @@ void cimpl_concatCmpImgsH( cimpl_cmpImg const img1, cimpl_cmpImg const img2, cim
   assert( out->w == img1.w + img2.w );
 
   for( size_t x=0; x<out->w; ++x ){
-    memcpy( out->data+x*out->w, img1.data+x*img1.h, img1.h*sizeof(complex float) );
-    memcpy( out->data+x*out->w, img2.data+x*img2.h, img2.h*sizeof(complex float) );
+    cimpl_memcpy( out->data+x*out->w, img1.data+x*img1.h, img1.h*sizeof(complex float) );
+    cimpl_memcpy( out->data+x*out->w, img2.data+x*img2.h, img2.h*sizeof(complex float) );
   }
 }
 
@@ -370,8 +406,8 @@ void cimpl_concatCmpImgsW( cimpl_cmpImg const img1, cimpl_cmpImg const img2, cim
   size_t img1Size=img1.h*img1.w;
   size_t img2Size=img2.h*img2.w;
 
-  memcpy( out->data, img1.data, img1Size*sizeof(complex float) );
-  memcpy( out->data, img2.data, img2Size*sizeof(complex float) );
+  cimpl_memcpy( out->data, img1.data, img1Size*sizeof(complex float) );
+  cimpl_memcpy( out->data, img2.data, img2Size*sizeof(complex float) );
 }
 
 void cimpl_concatImgsH( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out ){
@@ -379,8 +415,8 @@ void cimpl_concatImgsH( cimpl_img const img1, cimpl_img const img2, cimpl_img * 
   assert( out->h == img1.h + img2.h );
 
   for( size_t x=0; x<out->w; ++x ){
-    memcpy( out->data+x*out->w, img1.data+x*img1.h, img1.h*sizeof(float) );
-    memcpy( out->data+x*out->w+img1.h, img2.data+x*img2.h, img2.h*sizeof(float) );
+    cimpl_memcpy( out->data+x*out->w, img1.data+x*img1.h, img1.h*sizeof(float) );
+    cimpl_memcpy( out->data+x*out->w+img1.h, img2.data+x*img2.h, img2.h*sizeof(float) );
   }
 }
 
@@ -391,8 +427,8 @@ void cimpl_concatImgsW( cimpl_img const img1, cimpl_img const img2, cimpl_img * 
   size_t img1Size = img1.h*img1.w;
   size_t img2Size = img2.h*img2.w;
 
-  memcpy( out->data, img1.data, img1Size*sizeof(float) );
-  memcpy( out->data + img1Size, img2.data, img2Size*sizeof(float) );
+  cimpl_memcpy( out->data, img1.data, img1Size*sizeof(float) );
+  cimpl_memcpy( out->data + img1Size, img2.data, img2Size*sizeof(float) );
 }
 
 void cimpl_concatVolsH( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
@@ -406,9 +442,9 @@ void cimpl_concatVolsH( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * 
   
   for( size_t x=0; x<out->w; ++x ){
     for( size_t s=0; s<out->s; ++s ){
-      memcpy( out->data + x*out->w + s*sliceSizeOut, vol1.data + x*vol1.w + s*sliceSize1,
+      cimpl_memcpy( out->data + x*out->w + s*sliceSizeOut, vol1.data + x*vol1.w + s*sliceSize1,
         vol1.h*sizeof(float) );
-      memcpy( out->data + x*out->w + s*sliceSizeOut + vol2.h, vol2.data + x*vol2.w + s*sliceSize2,
+      cimpl_memcpy( out->data + x*out->w + s*sliceSizeOut + vol2.h, vol2.data + x*vol2.w + s*sliceSize2,
         vol2.h*sizeof(float) );
   } }
 }
@@ -421,8 +457,8 @@ void cimpl_concatVolsS( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * 
   size_t sizeVol1 = vol1.h*vol1.s*vol1.w;
   size_t sizeVol2 = vol2.h*vol2.s*vol2.w;
   
-  memcpy( out->data, vol1.data, sizeVol1*sizeof(float) );
-  memcpy( out->data+sizeVol1, vol2.data, sizeVol2*sizeof(float) );
+  cimpl_memcpy( out->data, vol1.data, sizeVol1*sizeof(float) );
+  cimpl_memcpy( out->data+sizeVol1, vol2.data, sizeVol2*sizeof(float) );
 }
 
 void cimpl_concatCmpVolsW( cimpl_cmpVol const vol1, cimpl_cmpVol const vol2, cimpl_cmpVol * const out ){
@@ -434,8 +470,8 @@ void cimpl_concatCmpVolsW( cimpl_cmpVol const vol1, cimpl_cmpVol const vol2, cim
   size_t sliceSize2 = vol2.h*vol2.w;
   
   for( size_t s=0; s<out->h*out->w; ++s ){
-    memcpy( out->data+s*out->h*out->w, vol1.data+s*sliceSize1, sizeof(complex float)*sliceSize1 );
-    memcpy( out->data+s*out->h*out->w + sliceSize1*sizeof(complex float), vol2.data+s*sliceSize2,
+    cimpl_memcpy( out->data+s*out->h*out->w, vol1.data+s*sliceSize1, sizeof(complex float)*sliceSize1 );
+    cimpl_memcpy( out->data+s*out->h*out->w + sliceSize1*sizeof(complex float), vol2.data+s*sliceSize2,
            sizeof(complex float)*sliceSize2 );
   }
 }
@@ -451,9 +487,9 @@ void cimpl_concatCmpVolsH( cimpl_cmpVol const vol1, cimpl_cmpVol const vol2, cim
 
   for( size_t x=0; x<out->w; ++x ){
     for( size_t s=0; s<out->s; ++s ){
-      memcpy( out->data + x*out->w + s*sliceSizeOut, vol1.data + x*vol1.w + s*sliceSize1,
+      cimpl_memcpy( out->data + x*out->w + s*sliceSizeOut, vol1.data + x*vol1.w + s*sliceSize1,
         vol1.h*sizeof(complex float) );
-      memcpy( out->data + x*out->w + s*sliceSizeOut + vol2.h, vol2.data + x*vol2.w + s*sliceSize2,
+      cimpl_memcpy( out->data + x*out->w + s*sliceSizeOut + vol2.h, vol2.data + x*vol2.w + s*sliceSize2,
         vol2.h*sizeof(complex float) );
   } }
 }
@@ -466,8 +502,8 @@ void cimpl_concatCmpVolsS( cimpl_cmpVol const vol1, cimpl_cmpVol const vol2, cim
   size_t sizeVol1 = vol1.h*vol1.s*vol1.w;
   size_t sizeVol2 = vol2.h*vol2.s*vol2.w;
 
-  memcpy( out->data, vol1.data, sizeVol1*sizeof(complex float) );
-  memcpy( out->data+sizeVol1, vol2.data, sizeVol2*sizeof(complex float) );
+  cimpl_memcpy( out->data, vol1.data, sizeVol1*sizeof(complex float) );
+  cimpl_memcpy( out->data+sizeVol1, vol2.data, sizeVol2*sizeof(complex float) );
 }
 
 void cimpl_concatVolsW( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
@@ -479,8 +515,8 @@ void cimpl_concatVolsW( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * 
   size_t sliceSize2 = vol2.h*vol2.w;
 
   for( size_t s=0; s<out->h*out->w; ++s ){
-    memcpy( out->data+s*out->h*out->w, vol1.data+s*sliceSize1, sizeof(float)*sliceSize1 );
-    memcpy( out->data+s*out->h*out->w + sliceSize1*sizeof(float), vol2.data+s*sliceSize2,
+    cimpl_memcpy( out->data+s*out->h*out->w, vol1.data+s*sliceSize1, sizeof(float)*sliceSize1 );
+    cimpl_memcpy( out->data+s*out->h*out->w + sliceSize1*sizeof(float), vol2.data+s*sliceSize2,
       sizeof(float)*sliceSize2 );
   }
 }
@@ -520,7 +556,7 @@ void cimpl_cropImg( cimpl_img const in, cimpl_img * const out ){
     colOffset = x*out->h;
     minColOffset = (minW+x)*in.h;
 
-    memcpy( out->data+colOffset, in.data+minH+minColOffset, out->h*sizeof(float) );
+    cimpl_memcpy( out->data+colOffset, in.data+minH+minColOffset, out->h*sizeof(float) );
   }
 }
 
@@ -567,7 +603,7 @@ void cimpl_cropVol( cimpl_vol const in, cimpl_vol * const out ){
       colOffset = x*out->h;
       minColOffset = (minW+x)*in.h;
 
-      memcpy(out->data+colOffset+sliceOffset, in.data+minH+minColOffset+minSliceOffset,
+      cimpl_memcpy(out->data+colOffset+sliceOffset, in.data+minH+minColOffset+minSliceOffset,
         out->h*sizeof(float) );
   } }
 }
@@ -1412,7 +1448,7 @@ void cimpl_roundVol( cimpl_vol const vol, cimpl_vol * const out ){
 
 void cimpl_sliceImgX( cimpl_img const in, size_t xIndx, float * const out ){
   assert( xIndx < in.w );
-  memcpy( out, in.data+xIndx*in.h, in.h*sizeof(float) );
+  cimpl_memcpy( out, in.data+xIndx*in.h, in.h*sizeof(float) );
 }
 
 void cimpl_sliceImgY( cimpl_img const in, size_t yIndx, float * const out ){
@@ -1425,13 +1461,13 @@ void cimpl_sliceX( cimpl_vol const in, size_t xIndx, cimpl_img * const out ){
   assert( in.h == out->h );  assert( in.s == out->w );
   assert( xIndx < in.w );
   for( size_t x=0; x<out->w; ++x )
-    memcpy(out->data+x*out->h, in.data+xIndx*in.h+x*out->h*out->w, out->h*sizeof(float) );
+    cimpl_memcpy(out->data+x*out->h, in.data+xIndx*in.h+x*out->h*out->w, out->h*sizeof(float) );
 }
 
 void cimpl_sliceXZ( cimpl_vol const in, size_t xIndx, size_t zIndx,
   float * const out ){
   assert( xIndx < in.w );  assert( zIndx < in.s );
-  memcpy( out, in.data+xIndx*in.h+zIndx*in.h*in.w, in.h*sizeof(float) );
+  cimpl_memcpy( out, in.data+xIndx*in.h+zIndx*in.h*in.w, in.h*sizeof(float) );
 }
 
 void cimpl_sliceY( cimpl_vol const in, size_t yIndx, cimpl_img * const out ){
@@ -1462,9 +1498,8 @@ void cimpl_sliceYZ( cimpl_vol const in, size_t yIndx, size_t zIndx,
 void cimpl_sliceZ( cimpl_vol const in, size_t zIndx, cimpl_img * const out ){
   assert( in.h == out->h );  assert( in.w == out->w );
   assert( zIndx < in.s );
-  for( size_t x=0; x<out->w; ++x ){
-    memcpy(out->data+x*out->h, in.data+x*out->h+zIndx*in.h*in.w, out->h*sizeof(float) );
-  }
+  for( size_t x=0; x<out->w; ++x )
+    cimpl_memcpy(out->data+x*out->h, in.data+x*out->h+zIndx*in.h*in.w, out->h*sizeof(float) );
 }
 
 void cimpl_spaceConvImgTemplate( cimpl_img const img1, cimpl_img const t, cimpl_img * const out ){
@@ -1487,10 +1522,10 @@ void cimpl_spaceConvImgTemplate( cimpl_img const img1, cimpl_img const t, cimpl_
           if( y+ty < 0 || y+ty > out->h ) continue;
           
           tmp += img1.data[(y+ty)+(x+tx)*img1.w] * t.data[(ty+hh)+(tx+hw)*t.w];
-        } }
+      } }
       
       out->data[y+x*out->w] = tmp;
-    } }
+  } }
 }
 
 void cimpl_sqrtImg( cimpl_img const in, cimpl_img * const out ){
@@ -1570,7 +1605,7 @@ void cimpl_subImg( cimpl_img const in, size_t const h1, size_t const w1,
   assert( h1+out->h < in.h );  assert( w1+out->w < in.w );
 
   for( size_t x=0; x<out->w; ++x )
-    memcpy(out->data+x*out->h, in.data+w1+(h1+x)*in.h, out->h*sizeof(float) );
+    cimpl_memcpy(out->data+x*out->h, in.data+w1+(h1+x)*in.h, out->h*sizeof(float) );
 }
 
 void cimpl_subtractCmpImgs( cimpl_cmpImg const img1, cimpl_cmpImg const img2,
