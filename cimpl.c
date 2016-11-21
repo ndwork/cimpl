@@ -1746,22 +1746,112 @@ float cimpl_sumVol( cimpl_vol const * const in ){
 void cimpl_zeroCmpImg( cimpl_cmpImg * const img  ){
   // Sets all values of complex image to 0
   assert( img->data != NULL );
+#ifndef CIMPL_DONT_SIMD
+  float* data = (float*) img->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  __m256 sseZeros = _mm256_setzero_ps();
+
+  int simdIters = (int) (img->h*img->w)/4;
+  for( size_t i=0; i<simdIters; ++i, data+=8 )
+    _mm256_store_ps( data, sseZeros );
+
+  for( int i=0; i<(img->h*img->w)-(4*simdIters); ++i )
+    img->data[i] = 0;
+
+#else  // #ifndef CIMPL_DONT_AVX
+
+  __m128 sseZeros = _mm_setzero_ps();
+
+  int simdIters = (int) (img->h*img->w)/2;
+  for( size_t i=0; i<simdIters; ++i, data+=4 )
+    _mm_store_ps( data, sseZeros );
+
+  for( int i=0; i<(img->h*img->w)-(2*simdIters); ++i )
+    img->data[i] = 0;
+
+#endif  // #ifndef CIMPL_DONT_AVX
+
+#else  // #ifndef CIMPL_DONT_SIMD
+
   for( size_t i=0; i<img->h*img->w; ++i )
     img->data[i] = 0;
+
+#endif // #ifndef CIMPL_DONT_SIMD
 }
 
 void cimpl_zeroImg( cimpl_img * const img  ){
   // Sets all values of image to 0
   assert( img->data != NULL );
+#ifndef CIMPL_DONT_SIMD
+  float* data = img->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  __m256 sseZeros = _mm256_setzero_ps();
+
+  int simdIters = (int) (img->h*img->w)/8;
+  for( size_t i=0; i<simdIters; ++i, data+=8 )
+    _mm256_store_ps( data, sseZeros );
+
+  for( int i=0; i<(img->h*img->w)-(8*simdIters); ++i )
+    img->data[i] = 0;
+
+#else  // #ifndef CIMPL_DONT_AVX
+
+  __m128 sseZeros = _mm_setzero_ps();
+
+  int simdIters = (int) (img->h*img->w)/4;
+  for( size_t i=0; i<simdIters; ++i, data+=4 )
+    _mm_store_ps( data, sseZeros );
+
+  for( int i=0; i<(img->h*img->w)-(4*simdIters); ++i )
+    img->data[i] = 0;
+
+#endif  // #ifndef CIMPL_DONT_AVX
+
+#else  // #ifndef CIMPL_DONT_SIMD
   for( size_t i=0; i<img->h*img->w; ++i )
     img->data[i] = 0;
+#endif //  #ifndef CIMPL_DONT_SIMD
 }
 
 void cimpl_zeroVol( cimpl_vol * const vol  ){
   // Sets all values of volume to 0
   assert( vol->data != NULL );
+#ifndef CIMPL_DONT_SIMD
+  float* data = vol->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  __m256 sseZeros = _mm256_setzero_ps();
+
+  int simdIters = (int) (vol->h*vol->w)/8;
+  for( size_t i=0; i<simdIters; ++i, data+=8 )
+    _mm256_store_ps( data, sseZeros );
+
+  for( int i=0; i<(vol->h*vol->w)-(8*simdIters); ++i )
+    vol->data[i] = 0;
+
+#else  // #ifndef CIMPL_DONT_AVX
+
+  __m128 sseZeros = _mm_setzero_ps();
+
+  int simdIters = (int) (vol->h*vol->w)/4;
+  for( size_t i=0; i<simdIters; ++i, data+=4 )
+    _mm_store_ps( data, sseZeros );
+
+  for( int i=0; i<(vol->h*vol->w)-(4*simdIters); ++i )
+    vol->data[i] = 0;
+
+#endif  // #ifndef CIMPL_DONT_AVX
+
+#else  // #ifndef CIMPL_DONT_SIMD
+
   for( size_t i=0; i<vol->h*vol->w*vol->w; ++i )
     vol->data[i] = 0;
-}
 
+#endif // #ifndef CIMPL_DONT_SIMD
+}
 
