@@ -407,9 +407,9 @@ void cimpl_concatVolsH( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * 
   for( size_t x=0; x<out->w; ++x ){
     for( size_t s=0; s<out->s; ++s ){
       memcpy( out->data + x*out->w + s*sliceSizeOut, vol1.data + x*vol1.w + s*sliceSize1,
-             vol1.h*sizeof(float) );
+        vol1.h*sizeof(float) );
       memcpy( out->data + x*out->w + s*sliceSizeOut + vol2.h, vol2.data + x*vol2.w + s*sliceSize2,
-             vol2.h*sizeof(float) );
+        vol2.h*sizeof(float) );
   } }
 }
 
@@ -520,9 +520,8 @@ void cimpl_cropImg( cimpl_img const in, cimpl_img * const out ){
     colOffset = x*out->h;
     minColOffset = (minW+x)*in.h;
 
-    for( size_t y=0; y<out->h; ++y ){
-      out->data[y+colOffset] = in.data[ (minH+y)+ minColOffset ];
-  } }
+    memcpy( out->data+colOffset, in.data+minH+minColOffset, out->h*sizeof(float) );
+  }
 }
 
 void cimpl_cropVol( cimpl_vol const in, cimpl_vol * const out ){
@@ -568,10 +567,9 @@ void cimpl_cropVol( cimpl_vol const in, cimpl_vol * const out ){
       colOffset = x*out->h;
       minColOffset = (minW+x)*in.h;
 
-      for( size_t y=0; y<out->h; ++y ){
-        out->data[y + colOffset + sliceOffset] =
-          in.data[ (minH+y) + minColOffset + minSliceOffset ];
-  } } }
+      memcpy(out->data+colOffset+sliceOffset, in.data+minH+minColOffset+minSliceOffset,
+        out->h*sizeof(float) );
+  } }
 }
 
 void cimpl_divideImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out ){
@@ -1110,10 +1108,8 @@ void cimpl_minVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * cons
 }
 
 void cimpl_multiplyImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out ){
-  assert( out->w == img1.w );
-  assert( out->h == img1.h );
-  assert( out->w == img2.w );
-  assert( out->h == img2.h );
+  assert( out->w == img1.w );  assert( out->h == img1.h );
+  assert( out->w == img2.w );  assert( out->h == img2.h );
 #ifndef CIMPL_DONT_SIMD
 float* outData = out->data;
 
@@ -1416,8 +1412,7 @@ void cimpl_roundVol( cimpl_vol const vol, cimpl_vol * const out ){
 
 void cimpl_sliceImgX( cimpl_img const in, size_t xIndx, float * const out ){
   assert( xIndx < in.w );
-  for( size_t y=0; y<in.h; ++y )
-    out[y] = in.data[y+xIndx*in.h];
+  memcpy( out, in.data+xIndx*in.h, in.h*sizeof(float) );
 }
 
 void cimpl_sliceImgY( cimpl_img const in, size_t yIndx, float * const out ){
@@ -1429,18 +1424,14 @@ void cimpl_sliceImgY( cimpl_img const in, size_t yIndx, float * const out ){
 void cimpl_sliceX( cimpl_vol const in, size_t xIndx, cimpl_img * const out ){
   assert( in.h == out->h );  assert( in.s == out->w );
   assert( xIndx < in.w );
-  for( size_t x=0; x<out->w; ++x ){
-    for( size_t y=0; y<out->h; ++y ){
-      out->data[y+x*out->h] = in.data[ y+xIndx*in.h+x*out->h*out->w ];
-  } }
+  for( size_t x=0; x<out->w; ++x )
+    memcpy(out->data+x*out->h, in.data+xIndx*in.h+x*out->h*out->w, out->h*sizeof(float) );
 }
 
 void cimpl_sliceXZ( cimpl_vol const in, size_t xIndx, size_t zIndx,
   float * const out ){
-  assert( xIndx < in.w );
-  assert( zIndx < in.s );
-  for( size_t y=0; y<in.h; ++y )
-    out[y] = in.data[y+xIndx*in.h+zIndx*in.h*in.w];
+  assert( xIndx < in.w );  assert( zIndx < in.s );
+  memcpy( out, in.data+xIndx*in.h+zIndx*in.h*in.w, in.h*sizeof(float) );
 }
 
 void cimpl_sliceY( cimpl_vol const in, size_t yIndx, cimpl_img * const out ){
@@ -1472,16 +1463,15 @@ void cimpl_sliceZ( cimpl_vol const in, size_t zIndx, cimpl_img * const out ){
   assert( in.h == out->h );  assert( in.w == out->w );
   assert( zIndx < in.s );
   for( size_t x=0; x<out->w; ++x ){
-    for( size_t y=0; y<out->h; ++y ){
-      out->data[y+x*out->h] = in.data[ y+x*out->h+zIndx*in.h*in.w ];
-  } }
+    memcpy(out->data+x*out->h, in.data+x*out->h+zIndx*in.h*in.w, out->h*sizeof(float) );
+  }
 }
 
 void cimpl_spaceConvImgTemplate( cimpl_img const img1, cimpl_img const t, cimpl_img * const out ){
   assert( out->h == img1.h );  assert( out->w == img1.w );
   assert( t.h % 2 == 1 );
   assert( t.w % 2 == 1 );
-  
+
   float tmp;
   long hh = floorf( t.h / 2 );
   long hw = floorf( t.w / 2 );
@@ -1579,14 +1569,12 @@ void cimpl_subImg( cimpl_img const in, size_t const h1, size_t const w1,
   cimpl_img * const out ){
   assert( h1+out->h < in.h );  assert( w1+out->w < in.w );
 
-  for( size_t x=0; x<out->w; ++x ){
-    for( size_t y=0; y<out->h; ++y ){
-      out->data[y+x*out->h] = in.data[(w1+y)+(h1+x)*in.h];
-  } }
+  for( size_t x=0; x<out->w; ++x )
+    memcpy(out->data+x*out->h, in.data+w1+(h1+x)*in.h, out->h*sizeof(float) );
 }
 
 void cimpl_subtractCmpImgs( cimpl_cmpImg const img1, cimpl_cmpImg const img2,
-                      cimpl_cmpImg * const out ){
+  cimpl_cmpImg * const out ){
   assert( out->h == img1.h );  assert( out->w == img1.w );
   assert( out->h == img2.h );  assert( out->w == img2.w );
 #ifndef CIMPL_DONT_SIMD
