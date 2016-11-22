@@ -61,6 +61,8 @@ void cimpl_ceilVol( cimpl_vol const vol, cimpl_vol * const out );
 void cimpl_circShiftImg( cimpl_img const in, int hShift, int vShift, cimpl_img * const out );
 void cimpl_circShiftVol( cimpl_vol const in, int hShift, int vShift, int sShift,
   cimpl_vol * const out );
+void cimpl_cmpEqImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );
+void cimpl_cmpEqVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out );
 void cimpl_cmpGeImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );
 void cimpl_cmpGeVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out );
 void cimpl_cmpGtImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );
