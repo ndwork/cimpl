@@ -799,6 +799,88 @@ void cimpl_cmpLtVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_img * co
 #endif  // #ifndef CIMPL_DONT_SIMD
 }
 
+void cimpl_cmpNeqImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out ){
+  assert( out->h == img1.h );   assert( out->w == img1.w );
+  assert( out->h == img2.h );   assert( out->w == img2.w );
+
+#ifndef CIMPL_DONT_SIMD
+  float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) ((img1.h*img1.w) / 8);
+  __m256* l = (__m256*) img1.data;
+  __m256* r = (__m256*) img2.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++l, ++r, outData += 8)
+    _mm256_store_ps(outData, _mm256_cmp_ps( *l, *r, 28 ) );
+
+  for( int i=0; i < (img1.h*img1.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = (float)( img1.data[i+8*simdIters] != img2.data[i+8*simdIters] );
+
+#else  // #ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) ((img1.h*img1.w) / 4);
+  __m128* l = (__m128*)img1.data;
+  __m128* r = (__m128*)img2.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++l, ++r, outData += 4)
+    _mm_store_ps( outData, _mm_cmpneq_ps( *l, *r ) );
+
+  for( int i=0; i < (img1.h*img1.w)-(4*simdIters); ++i )
+    out->data[i+4*simdIters] = (float)( img1.data[i+4*simdIters] != img2.data[i+4*simdIters] );
+
+#endif  // #ifndef CIMPL_DONT_AVX
+
+#else  //  #ifndef CIMPL_DONT_SIMD
+
+  for( size_t i=0; i<img1.h*img1.w; ++i ){
+    out->data[i] = ( img1.data[i] != img2.data[i] ? 1 : 0 );
+
+#endif  // #ifndef CIMPL_DONT_SIMD
+}
+
+void cimpl_cmpNeqVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
+  assert( out->h == vol1.h );   assert( out->w == vol1.w );  assert( out->s == vol1.s );
+  assert( out->h == vol2.h );   assert( out->w == vol2.w );  assert( out->s == vol2.s );
+
+#ifndef CIMPL_DONT_SIMD
+  float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+  
+  int simdIters = (int) ((vol1.h*vol1.w*vol1.s) / 8);
+  __m256* l = (__m256*) vol1.data;
+  __m256* r = (__m256*) vol2.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++l, ++r, outData += 8)
+    _mm256_store_ps(outData, _mm256_cmp_ps( *l, *r, 28 ) );
+
+  for( int i=0; i < (vol1.h*vol1.w*vol1.s)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = (float)( vol1.data[i+8*simdIters] != vol2.data[i+8*simdIters] );
+
+#else  // #ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int)( (vol1.h*vol1.w*vol1.s) / 4 );
+  __m128* l = (__m128*) vol1.data;
+  __m128* r = (__m128*) vol2.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++l, ++r, outData += 4)
+    _mm_store_ps( outData, _mm_cmpneq_ps( *l, *r ) );
+
+  for( int i=0; i < (vol1.h*vol1.w*vol1.s)-(4*simdIters); ++i )
+    out->data[i+4*simdIters] = (float)( vol1.data[i+4*simdIters] != vol2.data[i+4*simdIters] );
+
+#endif  // #ifndef CIMPL_DONT_AVX
+
+#else  //  #ifndef CIMPL_DONT_SIMD
+
+  for( size_t i=0; i<vol1.h*vol1.w*vol1.s; ++i ){
+    out->data[i] = ( vol1.data[i] != vol2.data[i] ? 1 : 0 );
+
+#endif  // #ifndef CIMPL_DONT_SIMD
+}
+
 void cimpl_concatCmpImgsH( cimpl_cmpImg const img1, cimpl_cmpImg const img2, cimpl_cmpImg * const out ){
   assert( img1.h == img2.h );  assert( out->h == img1.h );
   assert( out->w == img1.w + img2.w );

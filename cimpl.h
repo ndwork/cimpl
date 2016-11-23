@@ -73,6 +73,8 @@ void cimpl_cmpLtImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * co
 void cimpl_cmpLtVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_img * const out );
 void cimpl_cmpLtEqImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );
 void cimpl_cmpLtEqVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out );
+void cimpl_cmpNeqImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );
+void cimpl_cmpNeqVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out );
 void cimpl_concatCmpImgsH( cimpl_cmpImg const img1, cimpl_cmpImg const img2, cimpl_cmpImg * const out );
 void cimpl_concatCmpImgsW( cimpl_cmpImg const img1, cimpl_cmpImg const img2, cimpl_cmpImg * const out );
 void cimpl_concatImgsH( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );
