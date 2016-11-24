@@ -205,22 +205,22 @@ void cimpl_addScalar2Img( float const scalar, cimpl_img const in, cimpl_img * co
 
   for(size_t i = 0; i<simdIters; ++i, ++inData, outData += 8)
     _mm256_store_ps(outData, _mm256_add_ps(*inData, s));
-  
+
   for( int i=0; i < (in.h*in.w)-(8*simdIters); ++i )
-    out->data[i+4*simdIters] = in.data[i+8*simdIters] + scalar;
+    out->data[i+8*simdIters] = in.data[i+8*simdIters] + scalar;
 
 #else
 
   int simdIters = (int) ((in.h*in.w) / 4);
   const __m128 s = _mm_set1_ps(scalar);
   __m128* inData = (__m128*) in.data;
-  
+
   for(size_t i = 0; i<simdIters; ++i, ++inData, outData += 4)
     _mm_store_ps(outData, _mm_add_ps(*inData, s));
-  
+
   for( int i=0; i < (in.h*in.w)-(4*simdIters); ++i )
     out->data[i+4*simdIters] = in.data[i+4*simdIters] + scalar;
-  
+
 #endif  // #ifdef CIMPL_DONT_AVX
 
 #else
@@ -2127,9 +2127,9 @@ void cimpl_sliceY( cimpl_vol const in, size_t yIndx, cimpl_img * const out ){
   assert( in.w == out->h );  assert( in.s == out->w );
   assert( yIndx < in.w );
   for( size_t x=0; x<out->w; ++x ){
-    for( size_t y=0; y<out->h; ++y ){
+    for( size_t y=0; y<out->h; ++y )
       out->data[y+x*out->h] = in.data[ yIndx+x*in.h+y*out->h*out->w ];
-  } }
+  }
 }
 
 void cimpl_sliceYX( cimpl_vol const in, size_t yIndx, size_t xIndx,
@@ -2258,7 +2258,7 @@ void cimpl_subImg( cimpl_img const in, size_t const h1, size_t const w1,
   assert( h1+out->h < in.h );  assert( w1+out->w < in.w );
 
   for( size_t x=0; x<out->w; ++x )
-    cimpl_memcpy(out->data+x*out->h, in.data+w1+(h1+x)*in.h, out->h*sizeof(float) );
+    cimpl_memcpy( out->data+x*out->h, in.data+w1+(h1+x)*in.h, out->h*sizeof(float) );
 }
 
 void cimpl_subtractCmpImgs( cimpl_cmpImg const img1, cimpl_cmpImg const img2,
@@ -2282,6 +2282,47 @@ void cimpl_subtractCmpImgs( cimpl_cmpImg const img1, cimpl_cmpImg const img2,
   for( size_t i=0; i<img1.h*img1.w; ++i )
     out->data[i] = img1.data[i] - img2.data[i];
 #endif
+}
+
+void cimpl_subtractImgFromScalar( cimpl_img const in, float const scalar, cimpl_img * const out ){
+  assert( out->w == in.w );  assert( out->h == in.h );
+#ifndef CIMPL_DONT_SIMD
+  float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  const __m256 neg1 = _mm256_set1_ps(-1);
+  const __m256 s = _mm256_set1_ps(scalar);
+  int simdIters = (int) ((in.h*in.w) / 8);
+  __m256* inData = (__m256*) in.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++inData, outData += 8)
+    _mm256_store_ps( outData, _mm256_add_ps( s, _mm256_mul_ps(*inData, neg1)) );
+
+  for( int i=0; i < (in.h*in.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = scalar - in.data[i+8*simdIters];
+
+#else
+
+  const __m128 neg1 = _mm_set1_ps(-1);
+  const __m128 s = _mm_set1_ps(scalar);
+  int simdIters = (int) ((in.h*in.w) / 4);
+  __m128* inData = (__m128*) in.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++inData, outData += 4)
+    _mm_store_ps( outData, _mm_add_ps( s, _mm_mul_ps(*inData, neg1)) );
+
+  for( int i=0; i < (in.h*in.w)-(4*simdIters); ++i )
+    out->data[i+4*simdIters] = scalar - in.data[i+4*simdIters];
+
+#endif  // #ifdef CIMPL_DONT_AVX
+
+#else  // #ifndef CIMPL_DONT_SIMD
+
+  for( size_t i=0; i<in.w*in.h; ++i )
+    out->data[i] = scalar - in.data[i];
+
+#endif  // #ifndef CIMPL_DONT_SIMD
 }
 
 void cimpl_subtractImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out ){
@@ -2326,6 +2367,47 @@ void cimpl_subtractImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img *
 #endif  // #ifndef CIMPL_DONT_SIMD
 }
 
+void cimpl_subtractVolFromScalar( cimpl_vol const in, float const scalar, cimpl_vol * const out ){
+  assert( out->w == in.w );  assert( out->h == in.h );
+#ifndef CIMPL_DONT_SIMD
+  float* outData = out->data;
+
+#ifndef CIMPL_DONT_AVX
+
+  const __m256 neg1 = _mm256_set1_ps(-1);
+  const __m256 s = _mm256_set1_ps(scalar);
+  int simdIters = (int) ((in.h*in.w*in.s) / 8);
+  __m256* inData = (__m256*) in.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++inData, outData += 8)
+    _mm256_store_ps( outData, _mm256_add_ps( s, _mm256_mul_ps(*inData, neg1)) );
+
+  for( int i=0; i < (in.h*in.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = scalar - in.data[i+8*simdIters];
+
+#else
+
+  const __m128 neg1 = _mm_set1_ps(-1);
+  const __m128 s = _mm_set1_ps(scalar);
+  int simdIters = (int) ((in.h*in.w*in.s) / 4);
+  __m128* inData = (__m128*) in.data;
+
+  for(size_t i = 0; i<simdIters; ++i, ++inData, outData += 4)
+    _mm_store_ps( outData, _mm_add_ps( s, _mm_mul_ps(*inData, neg1)) );
+
+  for( int i=0; i < (in.h*in.w)-(4*simdIters); ++i )
+    out->data[i+4*simdIters] = scalar - in.data[i+4*simdIters];
+
+#endif  // #ifdef CIMPL_DONT_AVX
+
+#else  // #ifndef CIMPL_DONT_SIMD
+
+  for( size_t i=0; i<in.w*in.h*in.s; ++i )
+    out->data[i] = scalar - in.data[i];
+
+#endif  // #ifndef CIMPL_DONT_SIMD
+}
+
 void cimpl_subtractVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out ){
   assert( out->h == vol1.h );  assert( out->w == vol1.w );  assert( out->s == vol1.s );
   assert( out->h == vol2.h );  assert( out->w == vol2.w );  assert( out->s == vol2.s );
@@ -2366,12 +2448,6 @@ void cimpl_subtractVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol *
     out->data[i] = vol1.data[i] - vol2.data[i];
 
 #endif  // #ifndef CIMPL_DONT_SIMD
-}
-
-void cimpl_subtractImgFromScalar( cimpl_img const in, float const scalar, cimpl_img * const out ){
-  assert( out->w == in.w );  assert( out->h == in.h );
-  for( size_t i=0; i<in.w*in.h; ++i )
-    out->data[i] = scalar - in.data[i];
 }
 
 void cimpl_subtractScalarFromImg( cimpl_img const in, float const scalar, cimpl_img * const out ){
