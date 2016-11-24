@@ -112,8 +112,9 @@ void cimpl_linInterps( size_t const N, float const * const x, float const * cons
 void cimpl_linInterpImg( cimpl_img const img, size_t const N, float const * const xq,
   float const * const yq, float const outOfBounds, float * const out );
 cimpl_cmpImg cimpl_mallocCmpImg( size_t const h, size_t const w );
+cimpl_cmpImg cimpl_mallocCmpVol( size_t const h, size_t const w , size_t const s );
 cimpl_img cimpl_mallocImg( size_t const h, size_t const w );
-cimpl_vol cimpl_mallocVol( size_t const h, size_t const w, size_t s );
+cimpl_vol cimpl_mallocVol( size_t const h, size_t const w, size_t const s );
 void cimpl_maxImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );
 void cimpl_maxVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out );
 void cimpl_minImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );
@@ -123,6 +124,8 @@ void cimpl_multiplyVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol *
 void cimpl_multiplyImgByScalar( cimpl_img const in, float const scalar, cimpl_img * const out );
 void cimpl_multiplyVolByScalar( cimpl_vol const in, float const scalar, cimpl_vol * const out );
 void cimpl_printImg( cimpl_img const in );
+void cimpl_rcpImg( cimpl_img const in, cimpl_img * const out );
+void cimpl_rcpVol( cimpl_vol const in, cimpl_vol * const out );
 void cimpl_reshapeCmpImg( size_t H, size_t W, cimpl_cmpImg * const img );
 void cimpl_reshapeImg( size_t H, size_t W, cimpl_img * const out );
 void cimpl_reshapeVol( size_t H, size_t W, size_t S, cimpl_vol * const out );
