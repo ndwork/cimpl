@@ -1098,6 +1098,36 @@ void cimpl_cropVol( cimpl_vol const in, cimpl_vol * const out ){
   } }
 }
 
+void cimpl_d1hImg( cimpl_img const in, cimpl_img * const out ){
+  assert( out->h == in.h );  assert( out->w == in.w );
+
+  float *next, *current;
+  current = in.data;
+  next = current + 1;
+  for( size_t x=0; x<in.w; ++x, ++current, ++next ){
+    for( size_t y=0; y<in.h-1; ++y, ++current, ++next )
+      out->data[y+x*in.h] = *next - *current;
+  }
+
+  for( size_t x=0; x<in.w; ++x )
+    out->data[(in.h-1)+x*in.h] = out->data[(in.h-2)+x*in.h];
+}
+
+void cimpl_d1wImg( cimpl_img const in, cimpl_img * const out ){
+  assert( out->h == in.h );  assert( out->w == in.w );
+
+  float *next, *current;
+  current = in.data;
+  next = in.data + 1;
+  for( size_t x=0; x<in.w-1; ++x, ++current, ++next ){
+    for( size_t y=0; y<in.h; ++y, ++current, ++next )
+      out->data[y+x*in.h] = *next - *current;
+  }
+
+  for( size_t y=0; y<in.h; ++y )
+    out->data[y+(in.w-1)*in.h] = out->data[y+(in.w-2)*in.h];
+}
+
 void cimpl_divideImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out ){
   assert( out->w == img1.w );  assert( out->h == img1.h );
   assert( out->w == img2.w );  assert( out->h == img2.h );

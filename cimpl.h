@@ -88,6 +88,8 @@ void cimpl_concatCmpVolsW( cimpl_cmpVol const vol1, cimpl_cmpVol const vol2, cim
 void cimpl_conjCmpImg( cimpl_cmpImg const in, cimpl_cmpImg * const out );
 void cimpl_cropImg( cimpl_img const in, cimpl_img * const out );
 void cimpl_cropVol( cimpl_vol const in, cimpl_vol * const out );
+void cimpl_d1hImg( cimpl_img const in, cimpl_img * const out );
+void cimpl_d1wImg( cimpl_img const in, cimpl_img * const out );
 void cimpl_divideImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );
 void cimpl_divideVols( cimpl_vol const vol1, cimpl_vol const vol2, cimpl_vol * const out );
 void cimpl_divideImgByScalar( cimpl_img const in, float const scalar, cimpl_img * const out );
