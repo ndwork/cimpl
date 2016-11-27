@@ -443,6 +443,30 @@ int test_sumVol(){
   return out;
 }
 
+int test_transposeImg(){
+  cimpl_img myImg, result, answer;
+  size_t M=3;
+  size_t N=2;
+  int out;
+  myImg = cimpl_mallocImg(M, N);
+  result = cimpl_mallocImg(N, M);
+  answer = cimpl_mallocImg(N, M);
+
+  for( size_t x=0; x<N; ++x ){
+    for( size_t y=0; y<M; ++y ){
+      myImg.data[y+x*myImg.h] = (float)( y+x*myImg.h );
+      answer.data[x+y*answer.h] = (float)( y+x*myImg.h );
+    }
+  }
+  cimpl_transposeImg( myImg, &result );
+  out = cimpl_equalImgs(result, answer);
+
+  cimpl_freeImg(&myImg);
+  cimpl_freeImg(&result);
+  cimpl_freeImg(&answer);
+  return out;
+}
+
 
 
 void cimpl_test(){
@@ -555,4 +579,9 @@ void cimpl_test(){
     printf("failed - cimpl_sumVol\n");
   }
 
+  if( test_transposeImg() ){
+    printf("passed - cimpl_transposeImg\n");
+  } else {
+    printf("failed - cimpl_transposeImg\n");
+  }
 }

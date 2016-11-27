@@ -2770,6 +2770,14 @@ float cimpl_sumVol( cimpl_vol const * const in ){
   return out;
 }
 
+void cimpl_transposeImg( cimpl_img const in, cimpl_img * const out ){
+  assert( out->h == in.w );  assert( out->w == in.h );
+  for( size_t x=0; x<out->w; ++x ){
+    for( size_t y=0; y<out->h; ++y )
+      out->data[y+x*out->h] = in.data[x+y*in.h];
+  }
+}
+
 void cimpl_zeroCmpImg( cimpl_cmpImg * const img  ){
   // Sets all values of complex image to 0
   assert( img->data != NULL );

@@ -162,6 +162,7 @@ void cimpl_subtractScalarFromImg( cimpl_img const in, float const scalar, cimpl_
 void cimpl_subtractScalarFromVol( cimpl_vol const in, float const scalar, cimpl_vol * const out );
 float cimpl_sumImg( cimpl_img const * const in );
 float cimpl_sumVol( cimpl_vol const * const in );
+void cimpl_transposeImg( cimpl_img const in, cimpl_img * const out );
 void cimpl_zeroCmpImg( cimpl_cmpImg * const img  );
 void cimpl_zeroImg( cimpl_img * const in  );
 void cimpl_zeroVol( cimpl_vol * const in  );
