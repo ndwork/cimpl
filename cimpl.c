@@ -1100,6 +1100,41 @@ void cimpl_cropVol( cimpl_vol const in, cimpl_vol * const out ){
 
 void cimpl_d1hImg( cimpl_img const in, cimpl_img * const out ){
   assert( out->h == in.h );  assert( out->w == in.w );
+#ifndef CIMPL_DONT_SIMD
+  float* outData;
+
+#ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) ((in.h*in.w) / 8);
+  const __m256 neg1 = _mm256_set1_ps(-1);
+  __m256* inData = (__m256*) in.data;
+  __m256* nextInData = (__m256*) in.data+1;
+
+  for( size_t i=0; i<in.w*in.h; ++i, ++inData, ++nextInData, outData+=8 )
+    _mm256_store_ps( outData, _mm256_add_ps( *nextInData, _mm256_mul_ps(*inData,neg1) ) );
+
+  for( int i=0; i < (in.h*in.w)-(8*simdIters); ++i )
+    out->data[i+8*simdIters] = sqrt( in.data[i+8*simdIters] );
+
+#else  // #ifndef CIMPL_DONT_AVX
+
+  int simdIters = (int) ((in.h*in.w) / 4);
+  const __m128 neg1 = _mm_set1_ps(-1);
+  __m128* inData = (__m128*) in.data;
+  __m128* nextInData = (__m128*) in.data+1;
+
+  for( size_t i=0; i<in.w*in.h; ++i, ++inData, ++nextInData, outData+=4 )
+    _mm_store_ps( outData, _mm_add_ps( *nextInData, _mm_mul_ps(*inData,neg1) ) );
+
+  for( int i=0; i < (in.h*in.w)-(4*simdIters); ++i )
+    out->data[i+4*simdIters] = sqrt( in.data[i+4*simdIters] );
+
+#endif  // #ifndef CIMPL_DONT_AVX
+
+  for( size_t x=0; x<in.w; ++x )
+    out->data[(in.h-1)+x*in.h] = out->data[(in.h-2)+x*in.h];
+
+#else  // #ifndef CIMPL_DONT_SIMD
 
   float *next, *current;
   current = in.data;
@@ -1107,10 +1142,11 @@ void cimpl_d1hImg( cimpl_img const in, cimpl_img * const out ){
   for( size_t x=0; x<in.w; ++x, ++current, ++next ){
     for( size_t y=0; y<in.h-1; ++y, ++current, ++next )
       out->data[y+x*in.h] = *next - *current;
+
+    out->data[(in.h-1)+x*in.h] = out->data[(in.h-2)+x*in.h];
   }
 
-  for( size_t x=0; x<in.w; ++x )
-    out->data[(in.h-1)+x*in.h] = out->data[(in.h-2)+x*in.h];
+#endif  // #ifndef CIMPL_DONT_SIMD
 }
 
 void cimpl_d1wImg( cimpl_img const in, cimpl_img * const out ){
