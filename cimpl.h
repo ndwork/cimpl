@@ -17,15 +17,19 @@ extern "C" {
 #include <stddef.h>
 
 
+#define CIMPL_DONT_SIMD
+
 typedef struct {
   size_t h;  // height
   size_t w;  // width
+  size_t nPix;  // number of pixels in image
   float* data;  // column major ordering
 } cimpl_img;
 
 typedef struct {
   size_t h;  // height
   size_t w;  // width
+  size_t nPix;  // number of pixels in image
   float complex* data;
 } cimpl_cmpImg;
 
@@ -33,6 +37,7 @@ typedef struct {
   size_t h;  // height
   size_t w;  // width
   size_t s;  // number of slices
+  size_t nVox;  // number of voxels in volume
   float* data;  // column major ordering
 } cimpl_vol;
 
@@ -40,6 +45,7 @@ typedef struct {
   size_t h;  // height
   size_t w;  // width
   size_t s;  // number of slices
+  size_t nVox;  // number of voxels in volume
   float complex* data;
 } cimpl_cmpVol;
 
@@ -117,7 +123,7 @@ void cimpl_linInterps( size_t const N, float const * const x, float const * cons
 void cimpl_linInterpImg( cimpl_img const img, size_t const N, float const * const xq,
   float const * const yq, float const outOfBounds, float * const out );
 cimpl_cmpImg cimpl_mallocCmpImg( size_t const h, size_t const w );
-cimpl_cmpImg cimpl_mallocCmpVol( size_t const h, size_t const w , size_t const s );
+cimpl_cmpVol cimpl_mallocCmpVol( size_t const h, size_t const w , size_t const s );
 cimpl_img cimpl_mallocImg( size_t const h, size_t const w );
 cimpl_vol cimpl_mallocVol( size_t const h, size_t const w, size_t const s );
 void cimpl_maxImgs( cimpl_img const img1, cimpl_img const img2, cimpl_img * const out );
@@ -163,6 +169,7 @@ void cimpl_subtractScalarFromVol( cimpl_vol const in, float const scalar, cimpl_
 float cimpl_sumImg( cimpl_img const * const in );
 float cimpl_sumVol( cimpl_vol const * const in );
 void cimpl_transposeImg( cimpl_img const in, cimpl_img * const out );
+//void cimpl_xcorr( cimpl_img const img, cimpl_img const template, cimpl_img * const out );
 void cimpl_zeroCmpImg( cimpl_cmpImg * const img  );
 void cimpl_zeroImg( cimpl_img * const in  );
 void cimpl_zeroVol( cimpl_vol * const in  );
