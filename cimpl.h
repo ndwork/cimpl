@@ -17,8 +17,6 @@ extern "C" {
 #include <stddef.h>
 
 
-#define CIMPL_DONT_SIMD
-
 typedef struct {
   size_t h;  // height
   size_t w;  // width
