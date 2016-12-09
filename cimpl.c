@@ -2921,7 +2921,8 @@ void cimpl_zeroImg( cimpl_img * const img  ){
 
 #else  // #ifndef CIMPL_DONT_SIMD
 
-  memset( img->data, 0, img->nPix );
+  for( size_t i=0; i<img->nPix; ++i )
+    img->data[i] = 0;
 
 #endif //  #ifndef CIMPL_DONT_SIMD
 }
@@ -2958,7 +2959,8 @@ void cimpl_zeroVol( cimpl_vol * const vol  ){
 
 #else  // #ifndef CIMPL_DONT_SIMD
 
-  memset( vol->data, 0, vol->nVox );
+  for( size_t i=0; i<vol->nPix; ++i )
+    vol->data[i] = 0;
 
 #endif // #ifndef CIMPL_DONT_SIMD
 }
